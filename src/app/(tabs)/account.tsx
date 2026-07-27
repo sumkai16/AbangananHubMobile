@@ -10,6 +10,14 @@ import { useAuth } from '@/lib/auth-context';
 import { listFavorites } from '@/lib/favorites';
 import { listReservations } from '@/lib/reservations';
 
+function SectionLabel({ label }: { label: string }) {
+  return (
+    <Text className="mb-1 mt-5 px-1 text-[11px] font-bold uppercase tracking-wide text-text-muted">
+      {label}
+    </Text>
+  );
+}
+
 function MenuRow({
   icon,
   label,
@@ -27,14 +35,18 @@ function MenuRow({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center justify-between border-b border-border px-1 py-3.5 active:bg-section">
-      <Text className={`text-[14px] font-semibold ${textClass}`}>{label}</Text>
+      className="flex-row items-center gap-3 border-b border-border px-1 py-3.5 active:bg-section">
+      <Ionicons name={icon} size={18} color={iconColor} />
+      <Text className={`flex-1 text-[14px] font-semibold ${textClass}`}>{label}</Text>
       <Ionicons name="chevron-forward" size={16} color={iconColor} />
     </Pressable>
   );
 }
 
-export default function AccountScreen() {
+const NOT_BUILT_YET = (thing: string) => () =>
+  Alert.alert('Coming soon', `${thing} isn't built yet.`);
+
+export default function MoreScreen() {
   const router = useRouter();
   const { user, isLandlord, signOut } = useAuth();
   const [savedCount, setSavedCount] = useState<number | null>(null);
@@ -104,12 +116,22 @@ export default function AccountScreen() {
           />
         </View>
 
-        <View className="mx-4 mt-6">
-          <MenuRow
-            icon="person-outline"
-            label="Edit profile"
-            onPress={() => Alert.alert('Coming soon', 'Profile editing isn’t built yet.')}
-          />
+        <View className="mx-4">
+          {/* This is deliberately a punch list, not just a profile card —
+              every row past "Edit profile" is a module the WBS has already
+              named (M9 reviews, M10 notifications, M12 reports) that has no
+              screen yet. Each opens a "coming soon" alert rather than doing
+              nothing, so tapping one is honest about what's missing instead
+              of reading as a dead button. Update a row to a real onPress
+              the moment its screen ships — don't leave it pointing at
+              NOT_BUILT_YET after that. */}
+          <SectionLabel label="Activity" />
+          <MenuRow icon="notifications-outline" label="Notifications" onPress={NOT_BUILT_YET('Notifications')} />
+          <MenuRow icon="star-outline" label="My Reviews" onPress={NOT_BUILT_YET('Reviews')} />
+          <MenuRow icon="flag-outline" label="My Reports" onPress={NOT_BUILT_YET('Report history')} />
+
+          <SectionLabel label="Account" />
+          <MenuRow icon="person-outline" label="Edit profile" onPress={NOT_BUILT_YET('Profile editing')} />
 
           {/* No landlord dashboard exists yet (M3) — this is deliberately
               the only landlord-facing thing on mobile today: the entry
@@ -137,10 +159,10 @@ export default function AccountScreen() {
           <MenuRow
             icon="alert-circle-outline"
             label="Report a problem"
-            onPress={() => Alert.alert('Coming soon', 'In-app reporting isn’t built yet.')}
+            onPress={NOT_BUILT_YET('In-app reporting')}
           />
 
-          <Pressable onPress={handleSignOut} className="px-1 py-3.5 active:opacity-70">
+          <Pressable onPress={handleSignOut} className="mt-5 px-1 py-3.5 active:opacity-70">
             <Text className="text-[14px] font-semibold text-error">Log out</Text>
           </Pressable>
         </View>

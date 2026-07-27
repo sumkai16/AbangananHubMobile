@@ -62,12 +62,16 @@ export default function AppTabs() {
           ),
         }}
       />
+      {/* "More", not "Profile" — this tab is the hub for everything that
+          doesn't have its own tab slot: profile summary at the top, then
+          a punch list of named-but-unbuilt pages (notifications, reviews,
+          reports) as the app grows past what five tabs can hold. */}
       <Tabs.Screen
         name="account"
         options={{
-          title: 'Profile',
+          title: 'More',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={size} color={color} />
           ),
         }}
       />

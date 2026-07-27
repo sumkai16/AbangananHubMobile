@@ -186,8 +186,11 @@ are now canonical — match them rather than improvising a new shape when a
 new screen needs one of these elements.
 
 **Tab bar order and labels:** Browse, Saved, Messages, Reservations,
-Profile — exact prototype order and wording, not "Home"/"Favorites"/
-"Account". `app-tabs.tsx` is the source of truth.
+More — exact prototype order and wording, not "Home"/"Favorites"/
+"Account". The fifth tab was **relabeled Profile → More, 2026-07-27**: it's
+the hub for everything that doesn't get its own tab, not a profile-only
+screen — see `account.tsx`'s "Activity"/"Account" sections. `app-tabs.tsx`
+is the source of truth.
 
 **The dark hero is a one-time exception to §7's flat/light rule**, not a
 precedent for more of them. `bg-[#0F172A]` — the same navy the web app's
