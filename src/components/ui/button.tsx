@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ActivityIndicator, Pressable, Text, View, type PressableProps } from 'react-native';
+import { ActivityIndicator, Text, View, type PressableProps } from 'react-native';
+
+import { AnimatedPressable } from './animated-pressable';
 
 // The one button in the app. Flat solid fills, no gradients — see
 // context/DESIGN.md § 7. Every variant is >= 48px tall, clearing the 44pt/48dp
@@ -48,7 +50,7 @@ export function Button({
   const isDisabled = disabled || isLoading;
 
   return (
-    <Pressable disabled={isDisabled} {...props}>
+    <AnimatedPressable disabled={isDisabled} scaleTo={0.95} {...props}>
       {({ pressed }) => (
         <View
           className={`h-12 flex-row items-center justify-center gap-2 rounded-xl px-5 ${
@@ -65,6 +67,6 @@ export function Button({
           )}
         </View>
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }

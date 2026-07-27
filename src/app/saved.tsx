@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PropertyCard } from '@/components/property-card';
+import { StaggeredItem } from '@/components/ui/staggered-item';
 import { extractErrorMessage } from '@/lib/api-error';
 import { listFavorites, type Favorite } from '@/lib/favorites';
 import { toggleFavorite } from '@/lib/properties';
@@ -93,12 +94,14 @@ export default function FavoritesScreen() {
           data={favorites}
           keyExtractor={(item) => String(item.favorite_id)}
           contentContainerStyle={{ gap: 16, padding: 16 }}
-          renderItem={({ item }) => (
-            <PropertyCard
-              property={item.property}
-              onPress={() => router.push(`/property/${item.property.property_id}`)}
-              onToggleFavorite={() => handleToggleFavorite(item)}
-            />
+          renderItem={({ item, index }) => (
+            <StaggeredItem index={index}>
+              <PropertyCard
+                property={item.property}
+                onPress={() => router.push(`/property/${item.property.property_id}`)}
+                onToggleFavorite={() => handleToggleFavorite(item)}
+              />
+            </StaggeredItem>
           )}
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#156F8C" />

@@ -16,6 +16,7 @@ import {
 
 import { MoveInClockCard } from '@/components/move-in-clock';
 import { StageStepper } from '@/components/stage-stepper';
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { Button } from '@/components/ui/button';
 import { extractErrorMessage } from '@/lib/api-error';
 import { useAuth } from '@/lib/auth-context';
@@ -235,7 +236,10 @@ export default function ConversationThreadScreen() {
       {/* Custom header — replaces the native Stack title so the thread can
           carry the counterparty's identity as content, not chrome. */}
       <View className="border-b border-border bg-surface px-4 pb-3 pt-3">
-        <Pressable onPress={() => router.back()} hitSlop={8} className="flex-row items-center gap-1 self-start">
+        <Pressable
+          onPress={() => router.back()}
+          hitSlop={8}
+          className="flex-row items-center gap-1 self-start active:opacity-70">
           <Ionicons name="chevron-back" size={16} color="#156F8C" />
           <Text className="text-[13px] font-semibold text-primary">All conversations</Text>
         </Pressable>
@@ -257,7 +261,10 @@ export default function ConversationThreadScreen() {
             )}
           </View>
           {canResolve && (
-            <Pressable onPress={handleResolve} hitSlop={10} className="items-center justify-center">
+            <Pressable
+            onPress={handleResolve}
+            hitSlop={10}
+            className="items-center justify-center active:scale-95">
               <Ionicons name="checkmark-done-outline" size={20} color="#156F8C" />
             </Pressable>
           )}
@@ -364,7 +371,8 @@ export default function ConversationThreadScreen() {
       )}
 
       {!!conversation.property && (
-        <Pressable
+        <AnimatedPressable
+          scaleTo={0.98}
           onPress={() => router.push(`/property/${conversation.property_id}`)}
           className="flex-row items-center gap-3 border-b border-border bg-surface px-4 py-3">
           {cover ? (
@@ -386,7 +394,7 @@ export default function ConversationThreadScreen() {
               </Text>
             )}
           </View>
-        </Pressable>
+        </AnimatedPressable>
       )}
 
       <KeyboardAvoidingView

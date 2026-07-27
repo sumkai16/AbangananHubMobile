@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import type { Property } from '@/lib/properties';
 
 const CARD_WIDTH = { featured: 168 };
@@ -29,7 +30,8 @@ export function PropertyCard({
   const isFeatured = variant === 'featured';
 
   return (
-    <Pressable
+    <AnimatedPressable
+      scaleTo={0.97}
       className="active:opacity-90"
       style={isFeatured ? { width: CARD_WIDTH.featured } : undefined}
       onPress={onPress}>
@@ -102,6 +104,6 @@ export function PropertyCard({
           </Text>
         </View>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }

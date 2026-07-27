@@ -28,7 +28,7 @@ export function AppHeader() {
       <Pressable
         onPress={() => router.push('/account')}
         hitSlop={8}
-        className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-section active:opacity-80">
+        className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-section active:scale-95 active:opacity-80">
         {user?.profile_picture ? (
           <Image source={{ uri: user.profile_picture }} style={{ width: 36, height: 36 }} contentFit="cover" />
         ) : (

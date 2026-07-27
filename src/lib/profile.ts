@@ -14,3 +14,21 @@ export async function getProfile(): Promise<Profile> {
   const { data } = await api.get<{ data: Profile }>('/profile');
   return data.data;
 }
+
+export async function updateProfile(payload: {
+  first_name?: string;
+  last_name?: string;
+  contact_number?: string | null;
+  bio?: string | null;
+}): Promise<AuthUser> {
+  const { data } = await api.patch<{ data: AuthUser }>('/profile', payload);
+  return data.data;
+}
+
+export async function updatePassword(payload: {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
+}): Promise<void> {
+  await api.patch('/profile/password', payload);
+}

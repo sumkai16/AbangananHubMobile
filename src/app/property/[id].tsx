@@ -6,8 +6,11 @@ import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, Text, V
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
+import { StaggeredItem } from '@/components/ui/staggered-item';
+import { StarRating } from '@/components/ui/star-rating';
 import { extractErrorMessage } from '@/lib/api-error';
 import { getProperty, toggleFavorite, type PropertyDetail } from '@/lib/properties';
+import { relativeTime } from '@/lib/relative-time';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -101,19 +104,38 @@ export default function PropertyDetailScreen() {
               <Pressable
                 onPress={() => router.back()}
                 hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
                 className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
                 <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
               </Pressable>
-              <Pressable
-                onPress={handleToggleFavorite}
-                hitSlop={8}
-                className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
-                <Ionicons
-                  name={property.is_favorited ? 'heart' : 'heart-outline'}
-                  size={20}
-                  color={property.is_favorited ? '#FF8A65' : '#FFFFFF'}
-                />
-              </Pressable>
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: '/reports/submit',
+                      params: { propertyId: String(property.property_id), propertyTitle: property.title },
+                    })
+                  }
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel="Report this listing"
+                  className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
+                  <Ionicons name="flag-outline" size={19} color="#FFFFFF" />
+                </Pressable>
+                <Pressable
+                  onPress={handleToggleFavorite}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={property.is_favorited ? 'Remove from saved' : 'Save this listing'}
+                  className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
+                  <Ionicons
+                    name={property.is_favorited ? 'heart' : 'heart-outline'}
+                    size={20}
+                    color={property.is_favorited ? '#FF8A65' : '#FFFFFF'}
+                  />
+                </Pressable>
+              </View>
             </View>
           </SafeAreaView>
         </View>
@@ -209,6 +231,57 @@ export default function PropertyDetailScreen() {
               </View>
             </View>
           )}
+
+          <View className="mt-6">
+            <View className="mb-1 flex-row items-center justify-between">
+              <Text className="text-base font-bold text-text-primary">
+                Reviews {property.review_count > 0 ? `(${property.review_count})` : ''}
+              </Text>
+              {property.can_review && (
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: '/reviews/submit',
+                      params: { propertyId: String(property.property_id), propertyTitle: property.title },
+                    })
+                  }
+                  hitSlop={6}>
+                  <Text className="text-[12.5px] font-semibold text-primary">Write a review</Text>
+                </Pressable>
+              )}
+            </View>
+
+            {property.reviews.length === 0 ? (
+              <Text className="mt-2 text-sm text-text-muted">No reviews yet.</Text>
+            ) : (
+              <View className="mt-2 rounded-2xl border border-border bg-surface px-4">
+                {property.reviews.map((review, i) => (
+                  <StaggeredItem key={review.review_id} index={i}>
+                    <View className={i > 0 ? 'border-t border-border py-4' : 'py-4'}>
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-sm font-semibold text-text-primary">
+                          {review.tenant?.first_name} {review.tenant?.last_name}
+                        </Text>
+                        <Text className="text-xs text-text-muted">{relativeTime(review.created_at)}</Text>
+                      </View>
+                      <View className="mt-1">
+                        <StarRating value={review.rating} size={13} />
+                      </View>
+                      {!!review.review_comment && (
+                        <Text className="mt-1.5 text-sm text-text-primary">{review.review_comment}</Text>
+                      )}
+                      {!!review.landlord_reply && (
+                        <View className="mt-2 rounded-xl bg-section px-3 py-2">
+                          <Text className="text-xs font-bold text-primary">Landlord response</Text>
+                          <Text className="mt-0.5 text-xs text-text-primary">{review.landlord_reply}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </StaggeredItem>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>

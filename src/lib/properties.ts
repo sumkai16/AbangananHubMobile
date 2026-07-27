@@ -33,12 +33,15 @@ export type PropertyUnit = {
   media?: PropertyMedia[];
 };
 
+// Matches App\Http\Resources\ReviewResource.
 export type Review = {
   review_id: number;
   rating: number;
-  comment: string | null;
+  review_comment: string | null;
+  landlord_reply: string | null;
+  landlord_replied_at: string | null;
   created_at: string;
-  tenant?: { user_id: number; first_name: string; last_name: string };
+  tenant?: { user_id: number; first_name: string; last_name: string; profile_picture: string | null };
 };
 
 // Matches App\Http\Resources\PropertyResource. `min_rental_fee`/`avg_rating`/

@@ -1,50 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, TextInput, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppHeader } from '@/components/app-header';
 import { PropertyCard } from '@/components/property-card';
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
+import { StaggeredItem } from '@/components/ui/staggered-item';
 import { extractErrorMessage } from '@/lib/api-error';
+import { useBrowseFilters, type BrowseFilters } from '@/lib/browse-filters-context';
 import { listProperties, toggleFavorite, type Paginated, type Property } from '@/lib/properties';
 
-const BROWSE_TYPES: { value: string; label: string; icon: React.ComponentProps<typeof Ionicons>['name'] }[] = [
-  { value: 'Bedspace', label: 'Bedspace', icon: 'bed-outline' },
-  { value: 'Room', label: 'Room', icon: 'square-outline' },
-  { value: 'Apartment', label: 'Apartment', icon: 'business-outline' },
-  { value: 'House', label: 'House', icon: 'home-outline' },
+const BROWSE_TYPES = [
+  { value: 'Bedspace', label: 'Bedspace' },
+  { value: 'Room', label: 'Room' },
+  { value: 'Apartment', label: 'Apartment' },
+  { value: 'House', label: 'House' },
 ];
-
-// Static for now — the server has no "distinct areas near you" endpoint yet;
-// these are the same names the web app's location filter surfaces most.
-// Revisit if/when that becomes a real endpoint.
-const POPULAR_AREAS = ['Talisay City', 'Cebu City', 'Lahug / IT Park', 'Guadalupe', 'Apas'];
-
-function TypeTile({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={onPress} className="flex-1 items-center gap-1.5 active:opacity-70">
-      <View className="h-12 w-12 items-center justify-center rounded-xl bg-section">
-        <Ionicons name={icon} size={20} color="#156F8C" />
-      </View>
-      <Text className="text-[11px] font-semibold text-text-primary">{label}</Text>
-    </Pressable>
-  );
-}
 
 export default function BrowseScreen() {
   const router = useRouter();
+  const { filters, setFilters } = useBrowseFilters();
   const [properties, setProperties] = useState<Property[]>([]);
-  const [location, setLocation] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -58,67 +36,81 @@ export default function BrowseScreen() {
   // one and clobber good data with a stale error (or vice versa). Only the
   // most recently *started* request is allowed to touch state.
   const latestRequestId = useRef(0);
+  // Tracks which filter values the current list actually reflects, so
+  // returning from the search modal only re-fetches when something
+  // actually changed — not on every tab focus.
+  const appliedFilters = useRef<BrowseFilters | null>(null);
 
-  const fetchPage = useCallback(
-    async (pageToLoad: number, query: string, type: string | null, replace: boolean) => {
-      const requestId = ++latestRequestId.current;
-      try {
-        const result: Paginated<Property> = await listProperties({
-          location: query || undefined,
-          type: type || undefined,
-          page: pageToLoad,
-        });
-        if (requestId !== latestRequestId.current) return;
-        setProperties((prev) => (replace ? result.data : [...prev, ...result.data]));
-        setPage(result.current_page);
-        setLastPage(result.last_page);
-        setTotal(result.total);
-        setError(null);
-      } catch (err) {
-        if (requestId !== latestRequestId.current) return;
-        // eslint-disable-next-line no-console -- real error, not a debug leftover; the banner alone doesn't carry a stack trace.
-        console.error('[BrowseScreen] failed to load properties', err);
-        setError(extractErrorMessage(err));
-      }
-    },
-    []
-  );
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchPage(1, '', null, true).finally(() => setIsLoading(false));
-    // Only the initial load runs here — search/filter re-fetches happen from
-    // their own handlers, not on every keystroke or tap.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchPage = useCallback(async (pageToLoad: number, query: BrowseFilters, replace: boolean) => {
+    const requestId = ++latestRequestId.current;
+    try {
+      const parsedPriceMax = query.priceMax ? Number(query.priceMax) : undefined;
+      const result: Paginated<Property> = await listProperties({
+        location: query.location || undefined,
+        type: query.typeFilter || undefined,
+        price_max: parsedPriceMax && !Number.isNaN(parsedPriceMax) ? parsedPriceMax : undefined,
+        verified: query.verifiedOnly || undefined,
+        sort: query.sort,
+        page: pageToLoad,
+      });
+      if (requestId !== latestRequestId.current) return;
+      setProperties((prev) => (replace ? result.data : [...prev, ...result.data]));
+      setPage(result.current_page);
+      setLastPage(result.last_page);
+      setTotal(result.total);
+      setError(null);
+    } catch (err) {
+      if (requestId !== latestRequestId.current) return;
+      // eslint-disable-next-line no-console -- real error, not a debug leftover; the banner alone doesn't carry a stack trace.
+      console.error('[BrowseScreen] failed to load properties', err);
+      setError(extractErrorMessage(err));
+    }
   }, []);
 
-  async function runQuery(nextLocation: string, nextType: string | null) {
-    setIsLoading(true);
-    await fetchPage(1, nextLocation, nextType, true);
-    setIsLoading(false);
-  }
+  const runQuery = useCallback(
+    async (nextFilters: BrowseFilters) => {
+      appliedFilters.current = nextFilters;
+      setIsLoading(true);
+      await fetchPage(1, nextFilters, true);
+      setIsLoading(false);
+    },
+    [fetchPage]
+  );
 
-  function handleAreaTap(area: string) {
-    setLocation(area);
-    runQuery(area, typeFilter);
-  }
+  useFocusEffect(
+    useCallback(() => {
+      const applied = appliedFilters.current;
+      const changed =
+        !applied ||
+        applied.location !== filters.location ||
+        applied.typeFilter !== filters.typeFilter ||
+        applied.priceMax !== filters.priceMax ||
+        applied.verifiedOnly !== filters.verifiedOnly ||
+        applied.sort !== filters.sort;
+      if (changed) runQuery(filters);
+      // Runs once per focus with the latest filters snapshot — deliberately
+      // not depending on `filters` itself, which would re-fire mid-focus.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [runQuery])
+  );
 
   function handleTypeFilterTap(type: string) {
-    const next = typeFilter === type ? null : type || null;
-    setTypeFilter(next);
-    runQuery(location, next);
+    const next = filters.typeFilter === type ? null : type || null;
+    const nextFilters = { ...filters, typeFilter: next };
+    setFilters(nextFilters);
+    runQuery(nextFilters);
   }
 
   async function handleRefresh() {
     setIsRefreshing(true);
-    await fetchPage(1, location, typeFilter, true);
+    await fetchPage(1, filters, true);
     setIsRefreshing(false);
   }
 
   async function handleLoadMore() {
     if (isLoadingMore || page >= lastPage) return;
     setIsLoadingMore(true);
-    await fetchPage(page + 1, location, typeFilter, false);
+    await fetchPage(page + 1, filters, false);
     setIsLoadingMore(false);
   }
 
@@ -146,6 +138,8 @@ export default function BrowseScreen() {
 
   const featured = properties.slice(0, 6);
   const typeFilterChips = [{ value: '', label: 'All' }, ...BROWSE_TYPES];
+  const advancedFilterCount =
+    (filters.priceMax ? 1 : 0) + (filters.verifiedOnly ? 1 : 0) + (filters.sort !== 'newest' ? 1 : 0);
 
   const ListHeader = (
     <View className="pb-4">
@@ -166,38 +160,40 @@ export default function BrowseScreen() {
       </View>
 
       {/* Overlaps the hero's bottom edge on purpose — a floating card
-          bridging the dark and light sections, same as the prototype. */}
-      <View className="mx-4 -mt-5 h-12 flex-row items-center gap-2 rounded-full border border-border bg-surface px-4">
+          bridging the dark and light sections, same as the prototype. Tapping
+          it opens the full-screen search takeover (browse-by-type, popular
+          areas, advanced filters) instead of typing inline — see /search. */}
+      <AnimatedPressable
+        scaleTo={0.97}
+        onPress={() => router.push('/search')}
+        accessibilityRole="button"
+        accessibilityLabel={
+          filters.location
+            ? `Search, currently filtered to ${filters.location}`
+            : 'Search by location and filters'
+        }
+        className="mx-4 -mt-5 h-12 flex-row items-center gap-2 rounded-full border border-border bg-surface px-4 active:opacity-80">
         <Ionicons name="location-outline" size={16} color="#64748B" />
-        <TextInput
-          className="flex-1 text-[14px] text-text-primary"
-          placeholder="Search by location..."
-          placeholderTextColor="#94A3B8"
-          value={location}
-          onChangeText={setLocation}
-          onSubmitEditing={() => runQuery(location, typeFilter)}
-          returnKeyType="search"
-        />
-        <Pressable
-          onPress={() => runQuery(location, typeFilter)}
-          hitSlop={6}
-          className="h-8 w-8 items-center justify-center rounded-full bg-secondary active:opacity-80">
+        <Text
+          className={`flex-1 text-[14px] ${filters.location ? 'font-semibold text-text-primary' : 'text-text-muted'}`}
+          numberOfLines={1}>
+          {filters.location || 'Search by location...'}
+        </Text>
+        {advancedFilterCount > 0 && (
+          <View className="h-5 w-5 items-center justify-center rounded-full bg-secondary">
+            <Text className="text-[10px] font-bold text-white">{advancedFilterCount}</Text>
+          </View>
+        )}
+        <View className="h-8 w-8 items-center justify-center rounded-full bg-secondary">
           <Ionicons name="search" size={15} color="#FFFFFF" />
-        </Pressable>
-      </View>
+        </View>
+      </AnimatedPressable>
 
       <View className="mx-4 mt-3 flex-row items-center gap-1.5">
         <Ionicons name="checkmark-circle" size={13} color="#22C55E" />
         <Text className="text-[11.5px] font-medium text-text-muted">
           {total} listing{total === 1 ? '' : 's'} live · every landlord ID-verified
         </Text>
-      </View>
-
-      <Text className="mx-4 mb-3 mt-6 text-[16px] font-bold text-text-primary">Browse by type</Text>
-      <View className="mx-4 flex-row gap-2">
-        {BROWSE_TYPES.map((t) => (
-          <TypeTile key={t.value} icon={t.icon} label={t.label} onPress={() => handleTypeFilterTap(t.value)} />
-        ))}
       </View>
 
       {featured.length > 0 && (
@@ -212,34 +208,19 @@ export default function BrowseScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}
-            renderItem={({ item }) => (
-              <PropertyCard
-                property={item}
-                variant="featured"
-                onPress={() => router.push(`/property/${item.property_id}`)}
-                onToggleFavorite={() => handleToggleFavorite(item)}
-              />
+            renderItem={({ item, index }) => (
+              <StaggeredItem index={index}>
+                <PropertyCard
+                  property={item}
+                  variant="featured"
+                  onPress={() => router.push(`/property/${item.property_id}`)}
+                  onToggleFavorite={() => handleToggleFavorite(item)}
+                />
+              </StaggeredItem>
             )}
           />
         </>
       )}
-
-      <Text className="mx-4 mb-3 mt-6 text-[16px] font-bold text-text-primary">Popular areas in Cebu</Text>
-      <View className="mx-4 flex-row flex-wrap gap-2">
-        {POPULAR_AREAS.map((area) => (
-          <Pressable
-            key={area}
-            onPress={() => handleAreaTap(area)}
-            className={`rounded-full border px-3.5 py-2 active:opacity-70 ${
-              location === area ? 'border-secondary bg-section' : 'border-border bg-surface'
-            }`}>
-            <Text
-              className={`text-[12.5px] font-semibold ${location === area ? 'text-primary' : 'text-text-primary'}`}>
-              {area}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
 
       <View className="mx-4 mb-3 mt-6 flex-row items-center justify-between">
         <Text className="text-[16px] font-bold text-text-primary">All listings</Text>
@@ -252,15 +233,16 @@ export default function BrowseScreen() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingBottom: 4 }}
         renderItem={({ item }) => {
-          const active = (typeFilter ?? '') === item.value;
+          const active = (filters.typeFilter ?? '') === item.value;
           return (
-            <Pressable
+            <AnimatedPressable
+              scaleTo={0.92}
               onPress={() => handleTypeFilterTap(item.value)}
               className={`rounded-full px-4 py-2 active:opacity-80 ${active ? 'bg-secondary' : 'border border-border bg-surface'}`}>
               <Text className={`text-[12.5px] font-semibold ${active ? 'text-white' : 'text-text-primary'}`}>
                 {item.label}
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           );
         }}
       />
@@ -294,12 +276,14 @@ export default function BrowseScreen() {
               <Text className="mt-1 text-center text-sm text-text-muted">Try a different location.</Text>
             </View>
           }
-          renderItem={({ item }) => (
-            <PropertyCard
-              property={item}
-              onPress={() => router.push(`/property/${item.property_id}`)}
-              onToggleFavorite={() => handleToggleFavorite(item)}
-            />
+          renderItem={({ item, index }) => (
+            <StaggeredItem index={index}>
+              <PropertyCard
+                property={item}
+                onPress={() => router.push(`/property/${item.property_id}`)}
+                onToggleFavorite={() => handleToggleFavorite(item)}
+              />
+            </StaggeredItem>
           )}
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#156F8C" />

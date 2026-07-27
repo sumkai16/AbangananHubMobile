@@ -5,6 +5,8 @@ import { ActivityIndicator, FlatList, RefreshControl, Pressable, Text, View } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StatRow } from '@/components/stat-row';
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
+import { StaggeredItem } from '@/components/ui/staggered-item';
 import { extractErrorMessage } from '@/lib/api-error';
 import { listReservations, type Reservation, type ReservationCounts } from '@/lib/reservations';
 
@@ -152,10 +154,12 @@ export default function ReservationsScreen() {
           data={reservations}
           keyExtractor={(item) => String(item.reservation_id)}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => router.push(`/reservation/${item.reservation_id}`)}>
-              <ReservationRow reservation={item} />
-            </Pressable>
+          renderItem={({ item, index }) => (
+            <StaggeredItem index={index}>
+              <AnimatedPressable scaleTo={0.98} onPress={() => router.push(`/reservation/${item.reservation_id}`)}>
+                <ReservationRow reservation={item} />
+              </AnimatedPressable>
+            </StaggeredItem>
           )}
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#156F8C" />

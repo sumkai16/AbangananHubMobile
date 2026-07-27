@@ -4,6 +4,7 @@ import { getToken } from './api';
 import { login, logout, register, type AuthResponse, type AuthUser } from './auth';
 import { connectEcho, disconnectEcho } from './echo';
 import { getProfile } from './profile';
+import { registerPushToken } from './push-notifications';
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -60,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles(profile.roles);
         setIsAuthenticated(true);
         connectEcho(token);
+        registerPushToken().catch(() => {});
       } catch {
         setIsAuthenticated(false);
       } finally {
@@ -73,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRoles(data.roles);
     setIsAuthenticated(true);
     connectEcho(data.token);
+    registerPushToken().catch(() => {});
   }
 
   async function signIn(email: string, password: string) {

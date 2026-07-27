@@ -130,10 +130,15 @@ export default function MoreScreen() {
           <SectionLabel label="Activity" />
           <MenuRow icon="heart-outline" label="Saved" onPress={() => router.push('/saved')} />
           <MenuRow icon="star-outline" label="My Reviews" onPress={NOT_BUILT_YET('Reviews')} />
-          <MenuRow icon="flag-outline" label="My Reports" onPress={NOT_BUILT_YET('Report history')} />
+          <MenuRow icon="flag-outline" label="My Reports" onPress={() => router.push('/reports')} />
 
           <SectionLabel label="Account" />
-          <MenuRow icon="person-outline" label="Edit profile" onPress={NOT_BUILT_YET('Profile editing')} />
+          <MenuRow icon="person-outline" label="Edit profile" onPress={() => router.push('/profile/edit')} />
+          <MenuRow
+            icon="lock-closed-outline"
+            label="Change password"
+            onPress={() => router.push('/profile/change-password')}
+          />
 
           {/* No landlord dashboard exists yet (M3) — this is deliberately
               the only landlord-facing thing on mobile today: the entry

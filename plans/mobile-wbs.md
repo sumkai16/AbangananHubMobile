@@ -80,7 +80,7 @@ Status legend: `✔` done · `~` partial · `✕` not started
 | M1.4 | Session restore on cold start | ✔ |
 | M1.5 | **Role shell** — `GET /profile` hydrates roles at cold start (`auth-context.tsx`); `isLandlord` drives what Account shows | ✔ |
 | M1.6 | Social login (native Google/Facebook SDK → `POST /auth/{provider}/token`) | ✕ |
-| M1.7 | Profile view / edit / change password | ✕ |
+| M1.7 | Profile view / edit / change password | ✔ (`profile/edit.tsx`, `profile/change-password.tsx`) |
 
 > M1.5 shipped **the mechanism**, not a landlord tab set — M3's screens don't
 > exist yet, so there is nothing to switch the tabs *to*. Account now reads
@@ -98,9 +98,9 @@ Status legend: `✔` done · `~` partial · `✕` not started
 | M2.3 | Property detail (gallery, units, reviews) | ✔ |
 | M2.4 | Verified badge / legit indicators | ✔ |
 | M2.5 | Favorites | ✔ |
-| M2.6 | Filter chips — type, max price, verified, sort | ✕ |
+| M2.6 | Filter chips — type, max price, verified, sort | ✔ |
 | M2.7 | **Map view** — `react-native-maps` + OSM tiles | ✕ |
-| M2.8 | Tenant profile screen | ✕ (shares M1.7) |
+| M2.8 | Tenant profile screen | ✔ (M1.7) |
 
 ### M3 — Landlord Management `✕`
 | # | Task | Status |
@@ -182,23 +182,33 @@ Status legend: `✔` done · `~` partial · `✕` not started
 | M8.5 | Landlord reservation pipeline — advance / reject / cancel / mark turned over | ✕ |
 | M8.6 | Walk-in tenant form | ✕ |
 
-### M9 — Review and Rating System `✕`
+### M9 — Review and Rating System `~`
 | # | Task | Status |
 |---|---|---|
-| M9.1 | Star rating component | ✕ |
-| M9.2 | Tenant submits property review | ✕ |
-| M9.3 | Reviews on property detail | ~ (displayed, not submittable) |
-| M9.4 | Landlord reply to review | ✕ |
-| M9.5 | Landlord rates tenant | ✕ |
+| M9.1 | Star rating component | ✔ (`components/ui/star-rating.tsx`) |
+| M9.2 | Tenant submits property review | ✔ (`reviews/submit.tsx`, gated on `can_review`) |
+| M9.3 | Reviews on property detail | ✔ (list + landlord reply rendered) |
+| M9.4 | Landlord reply to review | ✕ (no landlord screens exist yet — M3) |
+| M9.5 | Landlord rates tenant | ✕ (same — waits on M3/M8.5) |
 
-### M10 — Notification System `✕`
+### M10 — Notification System `✔`
 | # | Task | Status |
 |---|---|---|
-| M10.1 | **Server: `expo_push_token` + `ExpoPushNotifier` (A.1)** | ✕ |
-| M10.2 | Register device token on login | ✕ |
-| M10.3 | In-app notification list | ✕ |
-| M10.4 | Mark read / mark all read | ✕ |
-| M10.5 | Push receipt → deep-link into the right screen | ✕ |
+| M10.1 | **Server: `expo_push_token` + `ExpoPushNotifier` (A.1)** | ✔ (found already shipped server-side) |
+| M10.2 | Register device token on login | ✔ (`lib/push-notifications.ts`, wired into `auth-context.tsx`) |
+| M10.3 | In-app notification list | ✔ (`(tabs)/notifications.tsx`) |
+| M10.4 | Mark read / mark all read | ✔ |
+| M10.5 | Push receipt → deep-link into the right screen | ✔ (`_layout.tsx` response listener, reservation links only — see note) |
+
+> Push `data` only ever carries `link` (a web-route URL string), never a
+> `conversation_id` — `ExpoPushNotifier::send()` doesn't pass one. Both the
+> in-app tap handler and the cold-start push listener parse a reservation id
+> out of `link` via `reservationIdFromLink()` and route to
+> `/reservation/[id]`; a `link` that isn't a reservation route currently
+> goes nowhere from a push tap (in-app taps still get conversation routing
+> via the notification row's own `conversation_id` field, which *is* present
+> on `GET /notifications`). Revisit if a notification type needs richer
+> push-tap routing than "reservation or nothing."
 
 > A.1 hangs push off `Notification::notify()`, the one factory every
 > creation site already funnels through. Adding it anywhere else means some
@@ -210,12 +220,17 @@ Status legend: `✔` done · `~` partial · `✕` not started
 | M11.1 | Occupancy dashboard (landlord) | ✕ |
 | M11.2 | Unit status display (Available / Reserved / Occupied / Maintenance) | ✕ |
 
-### M12 — Complaint and Reporting `✕`
+### M12 — Complaint and Reporting `~`
 | # | Task | Status |
 |---|---|---|
 | M12.1 | Server: `POST /reports` + `GET /tenant/reports` | ✔ |
-| M12.2 | Report submission form | ✕ |
-| M12.3 | My reports list | ✕ |
+| M12.2 | Report submission form | ✔ (`reports/submit.tsx` — property-target only, see note) |
+| M12.3 | My reports list | ✔ (`reports/index.tsx`) |
+
+> M12.2 only covers `target_type: 'property'` (reached from the property
+> detail header's flag icon) — `target_type: 'user'` has no entry point
+> yet, since mobile has no user-profile screens outside the landlord's own
+> KYC flow to report *from*. Extend the form once one exists.
 
 ### M13 — Reports Module `✕`
 | # | Task | Status |

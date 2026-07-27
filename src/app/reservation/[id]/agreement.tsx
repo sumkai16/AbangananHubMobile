@@ -221,7 +221,11 @@ export default function AgreementScreen() {
             acknowledgment of these terms.
           </Text>
 
-          <Pressable onPress={() => setAgree((v) => !v)} className="mb-3 flex-row items-start gap-3">
+          <Pressable
+            onPress={() => setAgree((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: agree }}
+            className="mb-3 flex-row items-start gap-3 active:opacity-70">
             <View
               className={`mt-0.5 h-5 w-5 items-center justify-center rounded-md border-2 ${
                 agree ? 'border-secondary bg-secondary' : 'border-border'
@@ -233,7 +237,11 @@ export default function AgreementScreen() {
             </Text>
           </Pressable>
 
-          <Pressable onPress={() => setAcceptTc((v) => !v)} className="mb-4 flex-row items-start gap-3">
+          <Pressable
+            onPress={() => setAcceptTc((v) => !v)}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: acceptTc }}
+            className="mb-4 flex-row items-start gap-3 active:opacity-70">
             <View
               className={`mt-0.5 h-5 w-5 items-center justify-center rounded-md border-2 ${
                 acceptTc ? 'border-secondary bg-secondary' : 'border-border'

@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AnimatedPressable } from '@/components/ui/animated-pressable';
+import { StaggeredItem } from '@/components/ui/staggered-item';
 import { extractErrorMessage } from '@/lib/api-error';
 import { useAuth } from '@/lib/auth-context';
 import { listConversations, type Conversation } from '@/lib/conversations';
@@ -144,10 +146,12 @@ export default function MessagesScreen() {
           data={conversations}
           keyExtractor={(item) => String(item.conversation_id)}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          renderItem={({ item }) => (
-            <Pressable onPress={() => router.push(`/conversation/${item.conversation_id}`)}>
-              <ConversationRow conversation={item} />
-            </Pressable>
+          renderItem={({ item, index }) => (
+            <StaggeredItem index={index}>
+              <AnimatedPressable scaleTo={0.98} onPress={() => router.push(`/conversation/${item.conversation_id}`)}>
+                <ConversationRow conversation={item} />
+              </AnimatedPressable>
+            </StaggeredItem>
           )}
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#156F8C" />
