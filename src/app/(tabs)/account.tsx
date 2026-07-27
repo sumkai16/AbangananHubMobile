@@ -119,14 +119,16 @@ export default function MoreScreen() {
         <View className="mx-4">
           {/* This is deliberately a punch list, not just a profile card —
               every row past "Edit profile" is a module the WBS has already
-              named (M9 reviews, M10 notifications, M12 reports) that has no
-              screen yet. Each opens a "coming soon" alert rather than doing
-              nothing, so tapping one is honest about what's missing instead
-              of reading as a dead button. Update a row to a real onPress
-              the moment its screen ships — don't leave it pointing at
-              NOT_BUILT_YET after that. */}
+              named (M9 reviews, M12 reports) that has no screen yet. Each
+              opens a "coming soon" alert rather than doing nothing, so
+              tapping one is honest about what's missing instead of reading
+              as a dead button. Update a row to a real onPress the moment
+              its screen ships — don't leave it pointing at NOT_BUILT_YET
+              after that. Notifications moved to its own tab (2026-07-27);
+              Saved lives here since it's a secondary action, not a screen
+              tenants live in day to day. */}
           <SectionLabel label="Activity" />
-          <MenuRow icon="notifications-outline" label="Notifications" onPress={NOT_BUILT_YET('Notifications')} />
+          <MenuRow icon="heart-outline" label="Saved" onPress={() => router.push('/saved')} />
           <MenuRow icon="star-outline" label="My Reviews" onPress={NOT_BUILT_YET('Reviews')} />
           <MenuRow icon="flag-outline" label="My Reports" onPress={NOT_BUILT_YET('Report history')} />
 

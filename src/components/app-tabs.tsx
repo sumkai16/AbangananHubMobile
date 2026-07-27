@@ -11,8 +11,11 @@ import { Tabs } from 'expo-router';
 // `constants/theme.ts`'s `Colors` — that's leftover template greyscale
 // (dark.background is literal black), not the brand palette.
 //
-// Order and labels (Browse / Saved / Messages / Reservations / Profile)
-// match the prototype's bottom bar exactly.
+// Order and labels (Browse / Messages / Notifications / Reservations /
+// More) — revised 2026-07-27, dropping Saved as its own tab in favor of
+// Notifications. Saved listings move to a MenuRow in the More hub
+// (src/app/saved.tsx, pushed from account.tsx) since favoriting is a
+// secondary action, not a screen tenants live in day to day.
 export default function AppTabs() {
   return (
     <Tabs
@@ -32,21 +35,25 @@ export default function AppTabs() {
         }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Saved',
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="messages"
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
               name={focused ? 'chatbubble' : 'chatbubble-outline'}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Notifications',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'notifications' : 'notifications-outline'}
               size={size}
               color={color}
             />

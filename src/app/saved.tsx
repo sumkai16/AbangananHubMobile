@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -61,8 +61,8 @@ export default function FavoritesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
+      <Stack.Screen options={{ title: 'Saved Listings' }} />
       <View className="px-4 pb-3 pt-2">
-        <Text className="text-2xl font-black tracking-tight text-text-primary">Saved Listings</Text>
         <Text className="mt-0.5 text-[12.5px] text-text-muted">
           {favorites.length} propert{favorites.length === 1 ? 'y' : 'ies'} saved
         </Text>
