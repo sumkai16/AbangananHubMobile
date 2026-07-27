@@ -213,17 +213,36 @@ horizontal scrollers — badge + title + price only, no room for address/
 rating at that width). Don't create a third card component; add a variant
 if a new context needs one.
 
-**Stat tiles**: three bordered `rounded-2xl` cards in a row, big bold
-number on top, small muted label below (`Reservations`' Total/In Progress/
-Occupied, `Profile`'s Saved/Reservations). The number's color carries
-meaning when the stat has one (amber for in-progress, green for occupied);
-neutral `text-primary` otherwise. Never fabricate a number the API doesn't
-provide — an honest `—` beats a guess (see Profile's Rating tile, omitted
+**Stat rows** (`stat-row.tsx`, revised 2026-07-27): a flat row of numbers
+separated by hairline vertical dividers (`border-l border-border`) — **no
+boxed tiles, no background.** The first version of this pattern used
+bordered `rounded-2xl` cards; a second prototype pass replaced them with
+plain dividers, which reads lighter and is a better fit for
+§7(e)'s "whitespace over dividers" than boxes ever were. Big bold number
+on top, small muted label below. The number's color carries meaning when
+the stat has one (amber for in-progress, green for occupied); neutral
+`text-primary` otherwise. Never fabricate a number the API doesn't
+provide — an honest `—` beats a guess (see Profile's Rating stat, omitted
 entirely until a real endpoint exists, rather than hardcoding one).
 
-**Status pills**: `rounded-full` chip, tinted background, bold text in the
-matching status color — the one place `text-secondary`/`text-success`/etc.
-as foreground text is fine, because the background is tinted, not white.
+**Status text vs. status pills — both exist, for different densities.**
+Dense lists (Reservations) show status as **plain bold colored text**, no
+pill — a pill on every row of a tight list reads as visual noise the
+second prototype pass explicitly removed. Pills survive where a status is
+the *only* piece of chrome on an otherwise plain surface (Messages'
+Resolved/Cancelled marker). Both read the same status→color map; only the
+container differs. `text-secondary`/`text-success`/etc. as foreground text
+is fine in the pill case because the background is tinted, not white — the
+plain-text case sits on `surface`/`background`, so route status colors
+through `warning`/`success`/`error`/`primary`, never `secondary`, to stay
+inside the WCAG rule in §2.
+
+**Favorite heart uses CTA coral (`#FF8A65`), not error red.** The
+established convention across the app: red is reserved for
+errors/destructive actions (§2), so a filled "this is saved" heart
+shouldn't borrow that color just because hearts are conventionally red
+elsewhere. Coral is also the app's one designated "this is an affirmative,
+memorable action" color, which a save action actually is.
 
 **Filter/category pills**: horizontal scroll, unselected = `border-border`
 outline on `surface`, selected = solid `bg-secondary` with white text. Used

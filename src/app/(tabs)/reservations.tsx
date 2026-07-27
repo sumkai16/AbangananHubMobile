@@ -1,112 +1,59 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '@/components/ui/button';
+import { StatRow } from '@/components/stat-row';
 import { extractErrorMessage } from '@/lib/api-error';
-import {
-  cancelReservation,
-  listReservations,
-  TERMINAL_STATUSES,
-  type Reservation,
-  type ReservationCounts,
-} from '@/lib/reservations';
+import { listReservations, type Reservation, type ReservationCounts } from '@/lib/reservations';
 
-const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  Inquiry: { bg: 'bg-warning/10', text: 'text-warning' },
-  'Under Negotiation': { bg: 'bg-warning/10', text: 'text-warning' },
-  'Pending Rental Agreement': { bg: 'bg-warning/10', text: 'text-warning' },
-  'Rental Agreement Signed': { bg: 'bg-secondary/10', text: 'text-secondary' },
-  Occupied: { bg: 'bg-success/10', text: 'text-success' },
-  Completed: { bg: 'bg-success/10', text: 'text-success' },
-  Cancelled: { bg: 'bg-border', text: 'text-text-muted' },
-  Rejected: { bg: 'bg-error/10', text: 'text-error' },
+const STATUS_TEXT: Record<string, string> = {
+  Inquiry: 'text-warning',
+  'Under Negotiation': 'text-warning',
+  'Pending Rental Agreement': 'text-warning',
+  'Rental Agreement Signed': 'text-primary',
+  Occupied: 'text-success',
+  Completed: 'text-success',
+  Cancelled: 'text-text-muted',
+  Rejected: 'text-error',
 };
 
-// The status pill only needs to say "Signed", not the full rental_status —
-// matches the prototype's shorthand.
+// Plain text, not a pill — matches the prototype. Only needs to say
+// "Signed", not the full rental_status.
 const STATUS_LABELS: Record<string, string> = {
   'Rental Agreement Signed': 'Signed',
 };
 
-function StatusBadge({ status }: { status: string }) {
-  const style = STATUS_STYLES[status] ?? { bg: 'bg-border', text: 'text-text-muted' };
-  return (
-    <View className={`rounded-full px-2.5 py-1 ${style.bg}`}>
-      <Text className={`text-[11px] font-bold ${style.text}`}>{STATUS_LABELS[status] ?? status}</Text>
-    </View>
-  );
-}
-
-function StatTile({ label, value, tone }: { label: string; value: number; tone: string }) {
-  return (
-    <View className="flex-1 items-center rounded-2xl border border-border bg-surface py-3.5">
-      <Text className={`text-[22px] font-black ${tone}`}>{value}</Text>
-      <Text className="mt-0.5 text-[11px] font-semibold text-text-muted">{label}</Text>
-    </View>
-  );
-}
-
-function ReservationCard({
-  reservation,
-  onCancel,
-}: {
-  reservation: Reservation;
-  onCancel: () => void;
-}) {
-  const canCancel = !TERMINAL_STATUSES.includes(reservation.rental_status);
+function ReservationRow({ reservation }: { reservation: Reservation }) {
   const landlordName = reservation.property?.landlord
     ? `${reservation.property.landlord.first_name} ${reservation.property.landlord.last_name}`
     : null;
 
   return (
-    <View className="rounded-2xl border border-border bg-surface p-4">
+    <View className="border-b border-border py-3.5">
       <View className="flex-row items-start justify-between gap-2">
-        <View className="flex-1">
-          <Text className="text-[14.5px] font-bold text-text-primary" numberOfLines={1}>
-            {reservation.property?.title ?? 'Property'}
-          </Text>
-          <Text className="mt-0.5 text-[12px] text-text-muted" numberOfLines={1}>
-            {[reservation.unit?.unit_label, landlordName].filter(Boolean).join(' · ')}
-          </Text>
-        </View>
-        <StatusBadge status={reservation.rental_status} />
+        <Text className="flex-1 text-[14.5px] font-bold text-text-primary" numberOfLines={1}>
+          {reservation.property?.title ?? 'Property'}
+        </Text>
+        <Text className={`shrink-0 text-[12.5px] font-bold ${STATUS_TEXT[reservation.rental_status] ?? 'text-text-muted'}`}>
+          {STATUS_LABELS[reservation.rental_status] ?? reservation.rental_status}
+        </Text>
       </View>
 
-      {!!reservation.remarks && (
-        <Text className="mt-2 text-xs text-text-muted" numberOfLines={2}>
-          {reservation.remarks}
-        </Text>
-      )}
+      <Text className="mt-0.5 text-[12px] text-text-muted" numberOfLines={1}>
+        {[reservation.unit?.unit_label, landlordName].filter(Boolean).join(' · ')}
+      </Text>
 
       {reservation.rental_status === 'Rejected' && !!reservation.rejection_reason && (
-        <Text className="mt-2 text-xs font-semibold text-error">{reservation.rejection_reason}</Text>
+        <Text className="mt-1.5 text-xs font-semibold text-error">{reservation.rejection_reason}</Text>
       )}
 
-      <Text className="mt-2 text-[11.5px] text-text-muted">
+      <Text className="mt-1.5 text-[11.5px] text-text-muted">
         {reservation.target_move_in_date
           ? `Move-in ${new Date(reservation.target_move_in_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
           : `Sent ${new Date(reservation.reservation_date).toLocaleDateString()}`}
       </Text>
-
-      {canCancel && (
-        <View className="mt-3">
-          <Button
-            title="Cancel"
-            variant="danger"
-            fullWidth={false}
-            // This card sits inside the list's own Pressable (tap-to-open-detail)
-            // — stopPropagation keeps a Cancel tap from also navigating, same
-            // pattern as property-card.tsx's favorite toggle.
-            onPress={(e) => {
-              e.stopPropagation();
-              onCancel();
-            }}
-          />
-        </View>
-      )}
     </View>
   );
 }
@@ -160,28 +107,8 @@ export default function ReservationsScreen() {
     setIsRefreshing(false);
   }
 
-  function handleCancel(reservation: Reservation) {
-    Alert.alert('Cancel reservation?', 'This cannot be undone.', [
-      { text: 'Keep it', style: 'cancel' },
-      {
-        text: 'Cancel reservation',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const updated = await cancelReservation(reservation.reservation_id);
-            setReservations((prev) =>
-              prev.map((r) => (r.reservation_id === updated.reservation_id ? updated : r))
-            );
-          } catch (err) {
-            Alert.alert('Could not cancel', extractErrorMessage(err));
-          }
-        },
-      },
-    ]);
-  }
-
   // "In Progress" is everything not yet occupied and not terminal — matches
-  // the prototype's three-tile breakdown (Total / In Progress / Occupied).
+  // the prototype's three-stat breakdown (Total / In Progress / Occupied).
   const inProgress = counts.all - counts.Occupied - counts.Cancelled - counts.Rejected;
 
   return (
@@ -190,10 +117,14 @@ export default function ReservationsScreen() {
         <Text className="text-2xl font-black tracking-tight text-text-primary">My Reservations</Text>
       </View>
 
-      <View className="flex-row gap-2.5 px-4 pb-4">
-        <StatTile label="Total" value={counts.all} tone="text-text-primary" />
-        <StatTile label="In Progress" value={Math.max(inProgress, 0)} tone="text-warning" />
-        <StatTile label="Occupied" value={counts.Occupied} tone="text-success" />
+      <View className="px-4 pb-4">
+        <StatRow
+          stats={[
+            { label: 'Total', value: counts.all },
+            { label: 'In Progress', value: Math.max(inProgress, 0), tone: 'text-warning' },
+            { label: 'Occupied', value: counts.Occupied, tone: 'text-success' },
+          ]}
+        />
       </View>
 
       {error && (
@@ -220,10 +151,10 @@ export default function ReservationsScreen() {
         <FlatList
           data={reservations}
           keyExtractor={(item) => String(item.reservation_id)}
-          contentContainerStyle={{ gap: 12, padding: 16, paddingTop: 0 }}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
           renderItem={({ item }) => (
             <Pressable onPress={() => router.push(`/reservation/${item.reservation_id}`)}>
-              <ReservationCard reservation={item} onCancel={() => handleCancel(item)} />
+              <ReservationRow reservation={item} />
             </Pressable>
           )}
           refreshControl={

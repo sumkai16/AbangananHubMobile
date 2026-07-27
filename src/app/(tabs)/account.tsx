@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { StatRow } from '@/components/stat-row';
 import { useAuth } from '@/lib/auth-context';
 import { listFavorites } from '@/lib/favorites';
 import { listReservations } from '@/lib/reservations';
@@ -30,15 +31,6 @@ function MenuRow({
       <Text className={`text-[14px] font-semibold ${textClass}`}>{label}</Text>
       <Ionicons name="chevron-forward" size={16} color={iconColor} />
     </Pressable>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: string | number }) {
-  return (
-    <View className="flex-1 items-center rounded-2xl border border-border bg-surface py-3.5">
-      <Text className="text-[18px] font-black text-text-primary">{value}</Text>
-      <Text className="mt-0.5 text-[11px] font-semibold text-text-muted">{label}</Text>
-    </View>
   );
 }
 
@@ -80,34 +72,36 @@ export default function AccountScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <ScrollView contentContainerClassName="pb-8">
-        <View className="flex-row items-center gap-3 rounded-b-2xl bg-secondary px-5 pb-6 pt-4">
+        <View className="flex-row items-center gap-3 px-4 pb-4 pt-2">
           {user?.profile_picture ? (
             <Image
               source={{ uri: user.profile_picture }}
-              style={{ height: 52, width: 52, borderRadius: 14 }}
+              style={{ height: 52, width: 52, borderRadius: 26 }}
               contentFit="cover"
             />
           ) : (
-            <View className="h-[52px] w-[52px] items-center justify-center rounded-2xl bg-white/20">
+            <View className="h-[52px] w-[52px] items-center justify-center rounded-full bg-secondary">
               <Text className="text-lg font-black text-white">{initial}</Text>
             </View>
           )}
           <View className="flex-1">
-            <Text className="text-[17px] font-black text-white" numberOfLines={1}>
+            <Text className="text-[17px] font-black text-text-primary" numberOfLines={1}>
               {fullName}
             </Text>
-            <Text className="mt-0.5 text-[12.5px] text-white/75" numberOfLines={1}>
+            <Text className="mt-0.5 text-[12.5px] text-text-muted" numberOfLines={1}>
               {isLandlord ? 'Landlord' : 'Tenant'}
               {memberSince ? ` · Member since ${memberSince}` : ''}
             </Text>
           </View>
         </View>
 
-        {/* Overlaps the header band's bottom edge, same floating-card
-            treatment as the Browse hero's search bar. */}
-        <View className="mx-4 -mt-4 flex-row gap-2.5">
-          <StatTile label="Saved" value={savedCount ?? '—'} />
-          <StatTile label="Reservations" value={reservationCount ?? '—'} />
+        <View className="mx-4">
+          <StatRow
+            stats={[
+              { label: 'Saved', value: savedCount ?? '—' },
+              { label: 'Reservations', value: reservationCount ?? '—' },
+            ]}
+          />
         </View>
 
         <View className="mx-4 mt-6">

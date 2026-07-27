@@ -105,7 +105,7 @@ export default function PropertyDetailScreen() {
                 <Ionicons
                   name={property.is_favorited ? 'heart' : 'heart-outline'}
                   size={20}
-                  color={property.is_favorited ? '#EF4444' : '#FFFFFF'}
+                  color={property.is_favorited ? '#FF8A65' : '#FFFFFF'}
                 />
               </Pressable>
             </View>
