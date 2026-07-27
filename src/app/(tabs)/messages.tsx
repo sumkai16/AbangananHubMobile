@@ -13,16 +13,20 @@ import { relativeTime } from '@/lib/relative-time';
 
 function ConversationRow({ conversation }: { conversation: Conversation }) {
   const cover = conversation.property?.media?.[0]?.media_url;
+  // The preview is whatever the latest message actually says — including
+  // system messages ("signed the rental agreement", "paid rent for Aug
+  // 2026", "proposed a key handover"). No separate "status caption" field
+  // is fabricated; the real message text already reads as one.
   const preview = conversation.latestMessage?.message;
   const unread = !!conversation.has_unread;
 
   return (
     <View className="flex-row items-start gap-3 border-b border-border py-3.5">
       {cover ? (
-        <Image source={{ uri: cover }} style={{ height: 44, width: 44, borderRadius: 22 }} contentFit="cover" />
+        <Image source={{ uri: cover }} style={{ height: 52, width: 52, borderRadius: 26 }} contentFit="cover" />
       ) : (
-        <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary">
-          <Text className="text-[15px] font-bold text-white">
+        <View className="h-[52px] w-[52px] items-center justify-center rounded-full bg-secondary">
+          <Text className="text-[17px] font-bold text-white">
             {conversation.other_party?.first_name?.charAt(0).toUpperCase() ?? '?'}
           </Text>
         </View>
@@ -30,11 +34,12 @@ function ConversationRow({ conversation }: { conversation: Conversation }) {
 
       <View className="flex-1">
         <View className="flex-row items-center justify-between gap-2">
-          <Text
-            className={`flex-1 text-[14px] text-text-primary ${unread ? 'font-black' : 'font-bold'}`}
-            numberOfLines={1}>
-            {conversation.other_party?.first_name} {conversation.other_party?.last_name}
-          </Text>
+          <View className="flex-1 flex-row items-center gap-1.5">
+            {unread && <View className="h-1.5 w-1.5 rounded-full bg-secondary" />}
+            <Text className="flex-1 text-[14px] font-bold text-text-primary" numberOfLines={1}>
+              {conversation.other_party?.first_name} {conversation.other_party?.last_name}
+            </Text>
+          </View>
           {!!conversation.latestMessage?.sent_at && (
             <Text className="shrink-0 text-[11px] text-text-muted">
               {relativeTime(conversation.latestMessage.sent_at)}
@@ -43,9 +48,7 @@ function ConversationRow({ conversation }: { conversation: Conversation }) {
         </View>
 
         {!!preview && (
-          <Text
-            className={`mt-1 text-[12.5px] ${unread ? 'font-semibold text-text-primary' : 'text-text-muted'}`}
-            numberOfLines={2}>
+          <Text className="mt-1 text-[12.5px] text-text-muted" numberOfLines={2}>
             {preview}
           </Text>
         )}
