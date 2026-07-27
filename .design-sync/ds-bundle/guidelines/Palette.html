@@ -1,0 +1,40 @@
+<!-- @dsCard group="Foundation" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>AbangananHub Palette</title>
+<link rel="stylesheet" href="../styles.css" />
+<style>
+  body { margin: 0; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  p.sub { font-size: 12px; color: var(--color-text-muted); margin: 0 0 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .swatch { border: 1px solid var(--color-border); border-radius: 10px; overflow: hidden; background: var(--color-surface); }
+  .fill { height: 64px; }
+  .meta { padding: 8px 10px; }
+  .meta .name { font-size: 12px; font-weight: 700; }
+  .meta .hex { font-size: 11px; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+  .meta .rule { font-size: 10.5px; color: var(--color-text-muted); margin-top: 4px; line-height: 1.4; }
+</style>
+</head>
+<body>
+  <h1>AbangananHub — locked palette</h1>
+  <p class="sub">Inherited from the web app. Do not drift — see context/DESIGN.md §2 in the mobile repo.</p>
+  <div class="grid">
+    <div class="swatch"><div class="fill" style="background:var(--color-primary)"></div><div class="meta"><div class="name">Primary — Deep Ocean Blue</div><div class="hex">#156F8C</div><div class="rule">Headers, key navigation</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-secondary)"></div><div class="meta"><div class="name">Secondary — Ocean Teal</div><div class="hex">#2AA7A1</div><div class="rule">Buttons/icons fill only — never text on white</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-accent)"></div><div class="meta"><div class="name">Accent — Aqua</div><div class="hex">#69D2C6</div><div class="rule">Badges/highlights, fill only</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-cta)"></div><div class="meta"><div class="name">CTA — Soft Coral</div><div class="hex">#FF8A65</div><div class="rule">The one primary-CTA color, locked hex</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-background); border-bottom:1px solid var(--color-border)"></div><div class="meta"><div class="name">Background — Ice White</div><div class="hex">#F7FCFC</div><div class="rule">Screen background</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-section); border-bottom:1px solid var(--color-border)"></div><div class="meta"><div class="name">Section — Mist Blue</div><div class="hex">#EEF8F8</div><div class="rule">Distinguishes content sections</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-surface); border-bottom:1px solid var(--color-border)"></div><div class="meta"><div class="name">Surface — White</div><div class="hex">#FFFFFF</div><div class="rule">Cards, sheets, modals</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-text-primary)"></div><div class="meta"><div class="name">Text primary — Charcoal</div><div class="hex">#1F2937</div><div class="rule">Headings, essential content</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-text-muted)"></div><div class="meta"><div class="name">Text muted — Slate Gray</div><div class="hex">#64748B</div><div class="rule">Descriptions, secondary labels</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-border); border-bottom:1px solid var(--color-border)"></div><div class="meta"><div class="name">Border — Soft Gray</div><div class="hex">#E2E8F0</div><div class="rule">Card borders, dividers</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-success)"></div><div class="meta"><div class="name">Success — Emerald</div><div class="hex">#22C55E</div><div class="rule">Confirmed / verified / paid</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-warning)"></div><div class="meta"><div class="name">Warning — Amber</div><div class="hex">#FBBF24</div><div class="rule">Due, pending, caution</div></div></div>
+    <div class="swatch"><div class="fill" style="background:var(--color-error)"></div><div class="meta"><div class="name">Error — Red</div><div class="hex">#EF4444</div><div class="rule">Validation errors, overdue, failed</div></div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+/* AbangananHub locked brand tokens — see tokens/colors.json for role/usage notes.
+   Source of truth: ../../tailwind.config.js theme.extend.colors + context/DESIGN.md.
+   This is a tokens-only sync: the app itself is React Native (no browser-renderable
+   component build), so no live components are bound here — colors only. */
+
+:root {
+  --color-primary: #156F8C;
+  --color-secondary: #2AA7A1;
+  --color-accent: #69D2C6;
+  --color-cta: #FF8A65;
+  --color-background: #F7FCFC;
+  --color-section: #EEF8F8;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1F2937;
+  --color-text-muted: #64748B;
+  --color-border: #E2E8F0;
+  --color-success: #22C55E;
+  --color-warning: #FBBF24;
+  --color-error: #EF4444;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}

@@ -1,0 +1,6 @@
+{
+  "projectId": "2ab0e8f3-c576-4e65-b829-fd03d04359f3",
+  "shape": "tokens-only",
+  "scope": "tokens",
+  "note": "This repo is a React Native + Expo app with no browser-renderable dist/Storybook, so this is a tokens-only sync (colors + type scale note), not the live-component pipeline. Source of truth: tailwind.config.js theme.extend.colors + context/DESIGN.md."
+}

@@ -1,0 +1,15 @@
+{
+  "primary": { "value": "#156F8C", "role": "Deep Ocean Blue", "usage": "Headers, key navigation elements" },
+  "secondary": { "value": "#2AA7A1", "role": "Ocean Teal", "usage": "Primary buttons, icons, active states — fills/backgrounds only, never as text on white (fails WCAG AA)" },
+  "accent": { "value": "#69D2C6", "role": "Aqua", "usage": "Badges, highlights — fills only, same contrast restriction as secondary" },
+  "cta": { "value": "#FF8A65", "role": "Soft Coral", "usage": "Primary call-to-action buttons — locked hex, one accent for CTAs, do not substitute another coral" },
+  "background": { "value": "#F7FCFC", "role": "Ice White", "usage": "Screen background" },
+  "section": { "value": "#EEF8F8", "role": "Mist Blue", "usage": "Distinguishes content sections from the base background" },
+  "surface": { "value": "#FFFFFF", "role": "White", "usage": "Cards, sheets, modals" },
+  "text-primary": { "value": "#1F2937", "role": "Charcoal", "usage": "Headings, essential content" },
+  "text-muted": { "value": "#64748B", "role": "Slate Gray", "usage": "Descriptions, secondary labels" },
+  "border": { "value": "#E2E8F0", "role": "Soft Gray", "usage": "Card borders, dividers" },
+  "success": { "value": "#22C55E", "role": "Emerald Green", "usage": "Confirmed / verified / paid states" },
+  "warning": { "value": "#FBBF24", "role": "Amber", "usage": "Due, pending, caution" },
+  "error": { "value": "#EF4444", "role": "Red", "usage": "Validation errors, overdue, failed" }
+}
