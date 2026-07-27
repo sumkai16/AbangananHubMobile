@@ -162,7 +162,7 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
           </Text>
           <Text className="mt-0.5 text-xs text-text-muted">{reservation.unit?.unit_label}</Text>
 
-          <View className="mt-4 rounded-2xl border border-border bg-surface p-4">
+          <View className="mt-5">
             {terminalTone ? (
               <View className={`self-start rounded-full px-3 py-1 ${terminalTone.bg}`}>
                 <Text className={`text-xs font-bold ${terminalTone.text}`}>{terminalTone.label}</Text>
@@ -178,12 +178,12 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
           </View>
 
           {reservation.rental_status === 'Rejected' && !!reservation.rejection_reason && (
-            <View className="mt-3 rounded-xl border border-error/30 bg-error/10 px-4 py-3">
+            <View className="mt-4 rounded-xl border border-error/30 bg-error/10 px-4 py-3">
               <Text className="text-xs font-semibold text-error">{reservation.rejection_reason}</Text>
             </View>
           )}
 
-          <View className="mt-4 rounded-2xl border border-border bg-surface px-4">
+          <View className="mt-5 border-t border-border">
             <InfoRow
               icon="calendar-outline"
               label="Sent"
@@ -203,34 +203,32 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
                 value={`₱${Number(reservation.agreed_monthly_rent).toLocaleString()}`}
               />
             )}
-          </View>
-
-          {!!reservation.property?.landlord && (
-            <View className="mt-4 flex-row items-center gap-3 rounded-2xl border border-border bg-surface p-4">
-              <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary">
-                <Text className="text-base font-bold text-white">
-                  {reservation.property.landlord.first_name.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              <View>
+            {!!reservation.property?.landlord && (
+              <View className="flex-row items-center justify-between border-t border-border py-2.5">
                 <Text className="text-[10.5px] font-semibold uppercase tracking-wide text-text-muted">
                   Landlord
                 </Text>
-                <Text className="text-[13px] font-bold text-text-primary">
-                  {reservation.property.landlord.first_name} {reservation.property.landlord.last_name}
-                </Text>
+                <View className="flex-row items-center gap-2">
+                  <View className="h-6 w-6 items-center justify-center rounded-full bg-secondary">
+                    <Text className="text-[11px] font-bold text-white">
+                      {reservation.property.landlord.first_name.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                  <Text className="text-[13px] font-semibold text-text-primary">
+                    {reservation.property.landlord.first_name} {reservation.property.landlord.last_name}
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
-
-          {!!reservation.remarks && (
-            <View className="mt-4 rounded-2xl border border-border bg-surface p-4">
-              <Text className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
-                Your message
-              </Text>
-              <Text className="mt-1.5 text-[13px] text-text-primary">{reservation.remarks}</Text>
-            </View>
-          )}
+            )}
+            {!!reservation.remarks && (
+              <View className="border-t border-border py-2.5">
+                <Text className="text-[10.5px] font-semibold uppercase tracking-wide text-text-muted">
+                  Your message
+                </Text>
+                <Text className="mt-1 text-[13px] text-text-primary">{reservation.remarks}</Text>
+              </View>
+            )}
+          </View>
 
           {canViewAgreement && (
             <View className="mt-6">
@@ -248,12 +246,7 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
 
           {canCancel && (
             <View className="mt-3">
-              <Button
-                title="Cancel reservation"
-                variant="danger"
-                fullWidth={false}
-                onPress={handleCancel}
-              />
+              <Button title="Cancel reservation" variant="danger" onPress={handleCancel} />
             </View>
           )}
         </View>

@@ -51,7 +51,7 @@ export default function PropertyDetailScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
-        <Stack.Screen options={{ title: '' }} />
+        <Stack.Screen options={{ title: '', headerShown: false }} />
         <ActivityIndicator color="#156F8C" />
       </View>
     );
@@ -60,7 +60,7 @@ export default function PropertyDetailScreen() {
   if (error || !property) {
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
-        <Stack.Screen options={{ title: '' }} />
+        <Stack.Screen options={{ title: '', headerShown: false }} />
         <Text className="text-center text-sm font-semibold text-error">
           {error ?? 'Property not found.'}
         </Text>
@@ -72,7 +72,7 @@ export default function PropertyDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Stack.Screen options={{ title: '' }} />
+      <Stack.Screen options={{ title: '', headerShown: false }} />
       <ScrollView bounces={false}>
         <View className="relative bg-section" style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}>
           {images.length > 0 ? (
@@ -97,7 +97,13 @@ export default function PropertyDetailScreen() {
           )}
 
           <SafeAreaView edges={['top']} className="absolute left-0 right-0 top-0">
-            <View className="flex-row justify-end px-4 pt-2">
+            <View className="flex-row items-center justify-between px-4 pt-2">
+              <Pressable
+                onPress={() => router.back()}
+                hitSlop={8}
+                className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
+                <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+              </Pressable>
               <Pressable
                 onPress={handleToggleFavorite}
                 hitSlop={8}
@@ -155,38 +161,35 @@ export default function PropertyDetailScreen() {
 
           {!!property.units?.length && (
             <View className="mt-6">
-              <Text className="mb-3 text-base font-bold text-text-primary">Available units</Text>
-              <View className="gap-3">
-                {property.units.map((unit) => (
+              <Text className="mb-1 text-base font-bold text-text-primary">Available units</Text>
+              <View className="rounded-2xl border border-border bg-surface px-4">
+                {property.units.map((unit, i) => (
                   <View
                     key={unit.unit_id}
-                    className="rounded-xl border border-border bg-surface p-4">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-sm font-semibold text-text-primary">{unit.unit_label}</Text>
-                      <View
-                        className={`rounded-full px-2.5 py-0.5 ${
-                          unit.availability_status === 'Available' ? 'bg-success/10' : 'bg-warning/10'
-                        }`}>
-                        <Text
-                          className={`text-[11px] font-bold ${
-                            unit.availability_status === 'Available' ? 'text-success' : 'text-warning'
-                          }`}>
-                          {unit.availability_status}
+                    className={i > 0 ? 'border-t border-border py-4' : 'py-4'}>
+                    <View className="flex-row items-start justify-between">
+                      <View className="flex-1">
+                        <Text className="text-sm font-semibold text-text-primary">{unit.unit_label}</Text>
+                        <Text className="mt-0.5 text-sm font-semibold text-text-primary">
+                          ₱{unit.rental_fee.toLocaleString()}
+                          <Text className="text-xs font-normal text-text-muted"> /month</Text>
                         </Text>
+                        {!!unit.description && (
+                          <Text className="mt-1 text-xs text-text-muted">{unit.description}</Text>
+                        )}
                       </View>
+                      <Text
+                        className={`text-xs font-bold ${
+                          unit.availability_status === 'Available' ? 'text-success' : 'text-warning'
+                        }`}>
+                        {unit.availability_status}
+                      </Text>
                     </View>
-                    <Text className="mt-1 text-sm font-semibold text-text-primary">
-                      ₱{unit.rental_fee.toLocaleString()}
-                      <Text className="text-xs font-normal text-text-muted"> /month</Text>
-                    </Text>
-                    {!!unit.description && (
-                      <Text className="mt-1 text-xs text-text-muted">{unit.description}</Text>
-                    )}
                     {unit.availability_status === 'Available' && (
                       <View className="mt-3">
                         <Button
                           title="Send Inquiry"
-                          variant="cta"
+                          variant="primary"
                           onPress={() =>
                             router.push({
                               pathname: '/reservation/inquire',
