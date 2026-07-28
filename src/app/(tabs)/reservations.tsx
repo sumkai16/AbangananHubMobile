@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { FileText } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -141,7 +141,7 @@ export default function ReservationsScreen() {
         </View>
       ) : reservations.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Ionicons name="document-text-outline" size={32} color="#2AA7A1" />
+          <FileText size={32} color="#2AA7A1" />
           <Text className="mt-3 text-center text-base font-semibold text-text-primary">
             No reservations yet
           </Text>

@@ -250,3 +250,12 @@ memorable action" color, which a save action actually is.
 **Filter/category pills**: horizontal scroll, unselected = `border-border`
 outline on `surface`, selected = solid `bg-secondary` with white text. Used
 for both the type filter chips and the popular-areas chips.
+
+**"Guest favourite" badge (added with the Airbnb-pattern redesign,
+2026-07-28).** No backend flag exists for this — it's derived client-side
+from real rating/review data (`avg_rating >= 4.8 && review_count >= 10`),
+never fabricated. The threshold constants live in `property-card.tsx`
+(`GUEST_FAVOURITE_MIN_RATING`/`GUEST_FAVOURITE_MIN_REVIEWS`) — import
+them rather than redefining the threshold if another screen needs the
+same badge logic. Revisit if the API ever adds an explicit
+`is_guest_favourite` field.

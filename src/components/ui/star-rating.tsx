@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Star } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import { AnimatedPressable } from './animated-pressable';
@@ -25,10 +25,19 @@ export function StarRating({
             accessibilityRole="radio"
             accessibilityLabel={`${star} star${star === 1 ? '' : 's'}`}
             accessibilityState={{ selected: star <= value }}>
-            <Ionicons name={star <= value ? 'star' : 'star-outline'} size={size} color="#FBBF24" />
+            <Star
+              size={size}
+              color="#FBBF24"
+              fill={star <= value ? '#FBBF24' : 'transparent'}
+            />
           </AnimatedPressable>
         ) : (
-          <Ionicons key={star} name={star <= value ? 'star' : 'star-outline'} size={size} color="#FBBF24" />
+          <Star
+            key={star}
+            size={size}
+            color="#FBBF24"
+            fill={star <= value ? '#FBBF24' : 'transparent'}
+          />
         )
       )}
     </View>

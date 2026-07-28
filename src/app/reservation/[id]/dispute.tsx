@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
+import { TextField } from '@/components/ui/text-field';
 import { extractErrorMessage } from '@/lib/api-error';
 import { DISPUTE_REASON_MAX, DISPUTE_REASON_MIN, disputeMoveIn } from '@/lib/escrow';
 
@@ -43,25 +44,24 @@ export default function DisputeScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerClassName="p-4" keyboardShouldPersistTaps="handled">
           <View className="flex-row items-start gap-2.5 rounded-2xl bg-warning/10 p-4">
-            <Ionicons name="alert-circle-outline" size={16} color="#B45309" style={{ marginTop: 1 }} />
-            <Text className="flex-1 text-[12.5px] leading-relaxed text-[#B45309]">
+            <AlertCircle size={16} color="#B45309" style={{ marginTop: 1 }} />
+            <Text className="flex-1 text-[12.5px] leading-relaxed text-warning-text">
               Use this if you haven&apos;t received the keys, or the unit isn&apos;t as agreed. Your
               deposit stays held and the countdown pauses while an administrator reviews it.
             </Text>
           </View>
 
-          <Text className="mb-1.5 mt-5 text-[13px] font-bold text-primary">What happened?</Text>
-          <TextInput
-            className="min-h-32 rounded-xl border border-border bg-surface px-4 py-3 text-[14px] text-text-primary"
-            placeholder="Describe the problem — the landlord hasn't turned over the keys, the unit doesn't match the listing, etc."
-            placeholderTextColor="#94A3B8"
-            value={reason}
-            onChangeText={setReason}
-            multiline
-            maxLength={DISPUTE_REASON_MAX}
-            textAlignVertical="top"
-          />
-          <View className="mb-6 mt-1.5 flex-row justify-between">
+          <View className="mt-5">
+            <TextField
+              label="What happened?"
+              multiline
+              placeholder="Describe the problem — the landlord hasn't turned over the keys, the unit doesn't match the listing, etc."
+              value={reason}
+              onChangeText={setReason}
+              maxLength={DISPUTE_REASON_MAX}
+            />
+          </View>
+          <View className="mb-6 -mt-2.5 flex-row justify-between">
             <Text className="text-[11px] text-text-muted">
               {tooShort ? `At least ${DISPUTE_REASON_MIN} characters` : ' '}
             </Text>

@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { AlertCircle, Calendar, Clock } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -38,7 +38,7 @@ export default function HandoverScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Key handover' }} />
-        <Ionicons name="alert-circle-outline" size={32} color="#94A3B8" />
+        <AlertCircle size={32} color="#94A3B8" />
         <Text className="mt-3 text-center text-sm font-semibold text-text-primary">
           Reservation not loaded
         </Text>
@@ -120,7 +120,7 @@ export default function HandoverScreen() {
           onPress={() => setPicking('date')}
           className="flex-row items-center justify-between rounded-xl px-3 py-3.5 active:bg-section">
           <View className="flex-row items-center gap-3">
-            <Ionicons name="calendar-outline" size={16} color="#64748B" />
+            <Calendar size={16} color="#64748B" />
             <Text className="text-[14px] text-text-primary">Date</Text>
           </View>
           <Text className="text-[14px] font-semibold text-text-primary">
@@ -134,7 +134,7 @@ export default function HandoverScreen() {
           onPress={() => setPicking('time')}
           className="flex-row items-center justify-between rounded-xl px-3 py-3.5 active:bg-section">
           <View className="flex-row items-center gap-3">
-            <Ionicons name="time-outline" size={16} color="#64748B" />
+            <Clock size={16} color="#64748B" />
             <Text className="text-[14px] text-text-primary">Time</Text>
           </View>
           <Text className="text-[14px] font-semibold text-text-primary">

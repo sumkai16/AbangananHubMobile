@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
+import { Flag } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -78,7 +78,7 @@ export default function MyReportsScreen() {
         </View>
       ) : reports.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Ionicons name="flag-outline" size={32} color="#2AA7A1" />
+          <Flag size={32} color="#2AA7A1" />
           <Text className="mt-3 text-center text-base font-semibold text-text-primary">No reports filed</Text>
           <Text className="mt-1 text-center text-sm text-text-muted">
             Reports you submit about listings or users show up here.

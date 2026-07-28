@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -40,14 +40,14 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName="flex-grow justify-center px-4 py-10"
+        contentContainerClassName="flex-grow justify-center px-6 py-10"
         keyboardShouldPersistTaps="handled">
-        <View className="w-full max-w-md self-center rounded-2xl border border-border bg-surface p-6">
-          <AuthHeader title="Welcome Back!" subtitle="Login to continue to AbangananHub" />
+        <View className="w-full max-w-md self-center">
+          <AuthHeader size="large" title="Welcome Back!" subtitle="Login to continue to AbangananHub" />
 
           {error && (
             <View className="mb-4 flex-row items-start gap-3 rounded-lg border border-error/30 bg-error/10 px-4 py-2.5">
-              <Ionicons name="alert-circle" size={16} color="#EF4444" style={{ marginTop: 2 }} />
+              <AlertCircle size={16} color="#EF4444" style={{ marginTop: 2 }} />
               <Text className="flex-1 text-xs font-semibold text-error">{error}</Text>
             </View>
           )}
@@ -78,7 +78,7 @@ export default function LoginScreen() {
             className="mt-1"
           />
 
-          <View className="mt-5 flex-row justify-center">
+          <View className="mt-6 flex-row justify-center">
             <Text className="text-xs font-medium text-text-muted">Don&apos;t have an account? </Text>
             <Link href="/register" className="text-xs font-bold text-primary">
               Register here

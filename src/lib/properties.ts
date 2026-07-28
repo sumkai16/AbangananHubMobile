@@ -31,6 +31,7 @@ export type PropertyUnit = {
   created_at: string;
   updated_at: string;
   media?: PropertyMedia[];
+  amenities?: { amenity_id: number; name: string }[];
 };
 
 // Matches App\Http\Resources\ReviewResource.

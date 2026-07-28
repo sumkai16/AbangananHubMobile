@@ -1,6 +1,16 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
+import {
+  AlertCircle,
+  Building2,
+  ChevronRight,
+  Flag,
+  Heart,
+  Lock,
+  Star,
+  User,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,21 +34,22 @@ function MenuRow({
   onPress,
   tone = 'default',
 }: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: LucideIcon;
   label: string;
   onPress: () => void;
   tone?: 'default' | 'danger';
 }) {
   const textClass = tone === 'danger' ? 'text-error' : 'text-text-primary';
   const iconColor = tone === 'danger' ? '#EF4444' : '#64748B';
+  const IconComponent = icon;
 
   return (
     <Pressable
       onPress={onPress}
       className="flex-row items-center gap-3 border-b border-border px-1 py-3.5 active:bg-section">
-      <Ionicons name={icon} size={18} color={iconColor} />
+      <IconComponent size={18} color={iconColor} />
       <Text className={`flex-1 text-[14px] font-semibold ${textClass}`}>{label}</Text>
-      <Ionicons name="chevron-forward" size={16} color={iconColor} />
+      <ChevronRight size={16} color={iconColor} />
     </Pressable>
   );
 }
@@ -128,14 +139,14 @@ export default function MoreScreen() {
               Saved lives here since it's a secondary action, not a screen
               tenants live in day to day. */}
           <SectionLabel label="Activity" />
-          <MenuRow icon="heart-outline" label="Saved" onPress={() => router.push('/saved')} />
-          <MenuRow icon="star-outline" label="My Reviews" onPress={NOT_BUILT_YET('Reviews')} />
-          <MenuRow icon="flag-outline" label="My Reports" onPress={() => router.push('/reports')} />
+          <MenuRow icon={Heart} label="Saved" onPress={() => router.push('/saved')} />
+          <MenuRow icon={Star} label="My Reviews" onPress={NOT_BUILT_YET('Reviews')} />
+          <MenuRow icon={Flag} label="My Reports" onPress={() => router.push('/reports')} />
 
           <SectionLabel label="Account" />
-          <MenuRow icon="person-outline" label="Edit profile" onPress={() => router.push('/profile/edit')} />
+          <MenuRow icon={User} label="Edit profile" onPress={() => router.push('/profile/edit')} />
           <MenuRow
-            icon="lock-closed-outline"
+            icon={Lock}
             label="Change password"
             onPress={() => router.push('/profile/change-password')}
           />
@@ -157,14 +168,14 @@ export default function MoreScreen() {
             </View>
           ) : (
             <MenuRow
-              icon="business-outline"
+              icon={Building2}
               label="Become a Landlord"
               onPress={() => router.push('/landlord/verification')}
             />
           )}
 
           <MenuRow
-            icon="alert-circle-outline"
+            icon={AlertCircle}
             label="Report a problem"
             onPress={NOT_BUILT_YET('In-app reporting')}
           />

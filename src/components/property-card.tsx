@@ -1,11 +1,19 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { Award, Heart, Home, Star } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import type { Property } from '@/lib/properties';
 
 const CARD_WIDTH = { featured: 168 };
+
+// "Guest favourite" badge threshold — no backend flag exists for this
+// (see context/DESIGN.md §8, guest-favourite badge note), so it's derived
+// client-side from real rating/review data rather than fabricated. Named
+// and exported here so any other screen needing the same badge logic
+// imports this instead of redefining its own threshold.
+export const GUEST_FAVOURITE_MIN_RATING = 4.8;
+export const GUEST_FAVOURITE_MIN_REVIEWS = 10;
 
 /**
  * One card, two layouts — matches the prototype's two contexts rather than
@@ -28,6 +36,9 @@ export function PropertyCard({
 }) {
   const coverImage = property.media?.[0]?.media_url;
   const isFeatured = variant === 'featured';
+  const isGuestFavourite =
+    (property.avg_rating ?? 0) >= GUEST_FAVOURITE_MIN_RATING &&
+    (property.review_count ?? 0) >= GUEST_FAVOURITE_MIN_REVIEWS;
 
   return (
     <AnimatedPressable
@@ -41,7 +52,7 @@ export function PropertyCard({
           <Image source={{ uri: coverImage }} style={{ width: '100%', height: '100%' }} contentFit="cover" />
         ) : (
           <View className="h-full w-full items-center justify-center">
-            <Ionicons name="home-outline" size={isFeatured ? 22 : 32} color="#2AA7A1" />
+            <Home size={isFeatured ? 22 : 32} color="#2AA7A1" />
           </View>
         )}
 
@@ -51,6 +62,13 @@ export function PropertyCard({
           </Text>
         </View>
 
+        {isGuestFavourite && !isFeatured && (
+          <View className="absolute bottom-2.5 left-2.5 flex-row items-center gap-1 rounded-full border border-border bg-surface/95 px-2.5 py-1">
+            <Award size={11} color="#1F2937" />
+            <Text className="text-[9.5px] font-bold text-text-primary">Guest favourite</Text>
+          </View>
+        )}
+
         <Pressable
           onPress={(e) => {
             e.stopPropagation();
@@ -58,10 +76,10 @@ export function PropertyCard({
           }}
           hitSlop={8}
           className="absolute right-2.5 top-2.5 h-8 w-8 items-center justify-center rounded-full bg-black/20 active:scale-95">
-          <Ionicons
-            name={property.is_favorited ? 'heart' : 'heart-outline'}
+          <Heart
             size={16}
             color={property.is_favorited ? '#FF8A65' : '#FFFFFF'}
+            fill={property.is_favorited ? '#FF8A65' : 'transparent'}
           />
         </Pressable>
       </View>
@@ -82,7 +100,7 @@ export function PropertyCard({
         <View className="mt-1.5 flex-row items-center justify-between">
           {!isFeatured && !!property.review_count ? (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="star" size={13} color="#FBBF24" />
+              <Star size={13} color="#FBBF24" fill="#FBBF24" />
               <Text className="text-[13px] font-semibold text-text-primary">
                 {property.avg_rating?.toFixed(1)}
               </Text>

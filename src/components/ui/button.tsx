@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import type { LucideIcon } from 'lucide-react-native';
 import { ActivityIndicator, Text, View, type PressableProps } from 'react-native';
 
 import { AnimatedPressable } from './animated-pressable';
@@ -42,12 +42,13 @@ export function Button({
 }: PressableProps & {
   title: string;
   variant?: Variant;
-  icon?: React.ComponentProps<typeof Ionicons>['name'];
+  icon?: LucideIcon;
   isLoading?: boolean;
   fullWidth?: boolean;
 }) {
   const style = VARIANTS[variant];
   const isDisabled = disabled || isLoading;
+  const IconComponent = icon;
 
   return (
     <AnimatedPressable disabled={isDisabled} scaleTo={0.95} {...props}>
@@ -61,7 +62,7 @@ export function Button({
             <ActivityIndicator color={style.spinner} />
           ) : (
             <>
-              {!!icon && <Ionicons name={icon} size={16} color={style.icon} />}
+              {!!IconComponent && <IconComponent size={16} color={style.icon} />}
               <Text className={`text-[15px] font-semibold ${style.label}`}>{title}</Text>
             </>
           )}

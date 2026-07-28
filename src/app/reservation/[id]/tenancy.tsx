@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { AlertCircle, CreditCard } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
 
+import { BottomActionBar } from '@/components/ui/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { extractErrorMessage } from '@/lib/api-error';
 import { getTenancy, type PeriodStatus, type RentPeriod, type Tenancy } from '@/lib/tenancy';
@@ -12,8 +13,8 @@ const peso = (n: number) => `₱${Number(n).toLocaleString(undefined, { minimumF
 
 const PERIOD_TONE: Record<PeriodStatus, { bg: string; text: string; label: string }> = {
   paid: { bg: 'bg-success/10', text: 'text-success', label: 'Paid' },
-  partial: { bg: 'bg-warning/10', text: 'text-[#B45309]', label: 'Partial' },
-  due: { bg: 'bg-warning/10', text: 'text-[#B45309]', label: 'Due' },
+  partial: { bg: 'bg-warning/10', text: 'text-warning-text', label: 'Partial' },
+  due: { bg: 'bg-warning/10', text: 'text-warning-text', label: 'Due' },
   overdue: { bg: 'bg-error/10', text: 'text-error', label: 'Overdue' },
   upcoming: { bg: 'bg-border', text: 'text-text-muted', label: 'Upcoming' },
 };
@@ -89,7 +90,7 @@ export default function TenancyScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Rent' }} />
-        <Ionicons name="alert-circle-outline" size={32} color="#94A3B8" />
+        <AlertCircle size={32} color="#94A3B8" />
         <Text className="mt-3 text-center text-sm font-semibold text-error">
           {error ?? 'Could not load your rent ledger'}
         </Text>
@@ -101,9 +102,10 @@ export default function TenancyScreen() {
   const isSettled = summary.outstanding <= 0;
 
   return (
+    <View className="flex-1 bg-background">
     <ScrollView
-      className="flex-1 bg-background"
-      contentContainerClassName="p-4 pb-10"
+      className="flex-1"
+      contentContainerClassName={`p-4 ${payable_period ? 'pb-24' : 'pb-10'}`}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor="#156F8C" />
       }>
@@ -126,17 +128,6 @@ export default function TenancyScreen() {
             ? ` · ${summary.overdueCount} month${summary.overdueCount > 1 ? 's' : ''} overdue`
             : ''}
         </Text>
-
-        {!!payable_period && (
-          <View className="mt-4">
-            <Button
-              title={`Pay ${payable_period.label} — ${peso(payable_period.balance)}`}
-              variant="cta"
-              icon="card-outline"
-              onPress={() => router.push(`/reservation/${reservationId}/pay-rent`)}
-            />
-          </View>
-        )}
       </View>
 
       <Text className="mb-1 mt-6 text-[11px] font-bold uppercase tracking-wider text-text-muted">
@@ -179,5 +170,19 @@ export default function TenancyScreen() {
         </>
       )}
     </ScrollView>
+
+      {!!payable_period && (
+        <BottomActionBar>
+          <View className="flex-1">
+            <Button
+              title={`Pay ${payable_period.label} — ${peso(payable_period.balance)}`}
+              variant="cta"
+              icon={CreditCard}
+              onPress={() => router.push(`/reservation/${reservationId}/pay-rent`)}
+            />
+          </View>
+        </BottomActionBar>
+      )}
+    </View>
   );
 }

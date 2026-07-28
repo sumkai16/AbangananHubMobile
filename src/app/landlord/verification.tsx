@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import WebView from 'react-native-webview';
@@ -44,7 +44,7 @@ export default function LandlordVerificationScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Verification' }} />
-        <Ionicons name="alert-circle-outline" size={32} color="#EF4444" />
+        <AlertCircle size={32} color="#EF4444" />
         <Text className="mt-3 text-center text-sm font-semibold text-error">{error}</Text>
         <View className="mt-4">
           <Button title="Try again" fullWidth={false} onPress={load} />

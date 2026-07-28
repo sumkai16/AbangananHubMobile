@@ -1,9 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Calendar, Check, CheckCircle2, CreditCard, Receipt } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { MoveInClockCard } from '@/components/move-in-clock';
+import { BottomActionBar } from '@/components/ui/bottom-action-bar';
 import { Button } from '@/components/ui/button';
 import { getAgreement, signAgreement } from '@/lib/agreement';
 import { extractErrorMessage } from '@/lib/api-error';
@@ -118,7 +119,8 @@ export default function AgreementScreen() {
   const canConfirmMoveIn = clock?.active_clock === 'confirmation' && !clock.disputed;
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerClassName="p-4 pb-10">
+    <View className="flex-1 bg-background">
+    <ScrollView className="flex-1" contentContainerClassName={`p-4 ${awaitingPayment || reservation.rental_status === 'Occupied' ? 'pb-24' : 'pb-10'}`}>
       <Stack.Screen options={{ title: 'Rental Agreement' }} />
 
       {!!clock && (
@@ -133,7 +135,7 @@ export default function AgreementScreen() {
             <View className="mt-3">
               <Button
                 title="Confirm move-in"
-                icon="checkmark-circle-outline"
+                icon={CheckCircle2}
                 isLoading={isConfirming}
                 onPress={handleConfirmMoveIn}
               />
@@ -152,7 +154,7 @@ export default function AgreementScreen() {
               <Button
                 title={reservation.handover_at ? 'Change handover time' : 'Propose a handover time'}
                 variant="outline"
-                icon="calendar-outline"
+                icon={Calendar}
                 onPress={() => router.push(`/reservation/${reservationId}/handover`)}
               />
             </View>
@@ -206,7 +208,7 @@ export default function AgreementScreen() {
 
       {isSigned ? (
         <View className="mt-6 flex-row items-center gap-3 rounded-xl border border-success/30 bg-success/10 px-4 py-3.5">
-          <Ionicons name="checkmark-circle" size={20} color="#22C55E" />
+          <CheckCircle2 size={20} color="#22C55E" />
           <View className="flex-1">
             <Text className="text-[13px] font-bold text-text-primary">Agreement signed</Text>
             <Text className="mt-0.5 text-[11.5px] text-text-muted">
@@ -230,7 +232,7 @@ export default function AgreementScreen() {
               className={`mt-0.5 h-5 w-5 items-center justify-center rounded-md border-2 ${
                 agree ? 'border-secondary bg-secondary' : 'border-border'
               }`}>
-              {agree && <Ionicons name="checkmark" size={13} color="#FFFFFF" />}
+              {agree && <Check size={13} color="#FFFFFF" />}
             </View>
             <Text className="flex-1 text-[13px] text-text-primary">
               I have read and agree to the terms of this Rental Agreement.
@@ -246,7 +248,7 @@ export default function AgreementScreen() {
               className={`mt-0.5 h-5 w-5 items-center justify-center rounded-md border-2 ${
                 acceptTc ? 'border-secondary bg-secondary' : 'border-border'
               }`}>
-              {acceptTc && <Ionicons name="checkmark" size={13} color="#FFFFFF" />}
+              {acceptTc && <Check size={13} color="#FFFFFF" />}
             </View>
             <Text className="flex-1 text-[13px] text-text-primary">
               I accept AbangananHub's platform Terms and Conditions.
@@ -262,27 +264,33 @@ export default function AgreementScreen() {
         </View>
       ) : null}
 
+    </ScrollView>
+
       {awaitingPayment && (
-        <View className="mt-6">
-          <Button
-            title="Pay initial deposit"
-            variant="cta"
-            icon="card-outline"
-            onPress={() => router.push(`/reservation/${reservation.reservation_id}/pay`)}
-          />
-        </View>
+        <BottomActionBar>
+          <View className="flex-1">
+            <Button
+              title="Pay initial deposit"
+              variant="cta"
+              icon={CreditCard}
+              onPress={() => router.push(`/reservation/${reservation.reservation_id}/pay`)}
+            />
+          </View>
+        </BottomActionBar>
       )}
 
       {reservation.rental_status === 'Occupied' && (
-        <View className="mt-6">
-          <Button
-            title="Rent ledger"
-            variant="outline"
-            icon="receipt-outline"
-            onPress={() => router.push(`/reservation/${reservationId}/tenancy`)}
-          />
-        </View>
+        <BottomActionBar>
+          <View className="flex-1">
+            <Button
+              title="Rent ledger"
+              variant="outline"
+              icon={Receipt}
+              onPress={() => router.push(`/reservation/${reservationId}/tenancy`)}
+            />
+          </View>
+        </BottomActionBar>
       )}
-    </ScrollView>
+    </View>
   );
 }

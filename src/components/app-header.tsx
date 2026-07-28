@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
+import { Home } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '@/lib/auth-context';
@@ -20,7 +20,7 @@ export function AppHeader() {
     <View className="flex-row items-center justify-between px-4 pb-2 pt-1">
       <View className="flex-row items-center gap-2">
         <View className="h-8 w-8 items-center justify-center rounded-lg bg-secondary">
-          <Ionicons name="home" size={16} color="#FFFFFF" />
+          <Home size={16} color="#FFFFFF" fill="#FFFFFF" />
         </View>
         <Text className="text-[15px] font-bold tracking-tight text-text-primary">AbangananHub</Text>
       </View>

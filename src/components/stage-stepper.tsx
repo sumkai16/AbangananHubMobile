@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Check } from 'lucide-react-native';
 import { View } from 'react-native';
 
 import type { Reservation, RentalStatus } from '@/lib/reservations';
@@ -30,7 +30,7 @@ export function StageStepper({ reservation }: { reservation: Reservation | null 
           <View key={i} className={`flex-row items-start ${isLast ? '' : 'flex-1'}`}>
             {isDone ? (
               <View className="h-[18px] w-[18px] items-center justify-center rounded-full bg-secondary">
-                <Ionicons name="checkmark" size={10} color="#FFFFFF" />
+                <Check size={10} color="#FFFFFF" />
               </View>
             ) : isCurrent ? (
               <View className="h-[18px] w-[18px] items-center justify-center rounded-full bg-secondary/15">

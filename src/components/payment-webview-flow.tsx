@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
+import { AlertCircle, CheckCircle2, Clock } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import WebView from 'react-native-webview';
@@ -106,7 +106,7 @@ export function PaymentWebViewFlow({
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
         {screen}
-        <Ionicons name="alert-circle-outline" size={32} color="#EF4444" />
+        <AlertCircle size={32} color="#EF4444" />
         <Text className="mt-3 text-center text-sm font-semibold text-error">{error}</Text>
         <View className="mt-4">
           <Button title="Try again" fullWidth={false} onPress={startCheckout} />
@@ -129,14 +129,11 @@ export function PaymentWebViewFlow({
 
   if (phase === 'settled') {
     const paid = payment?.status === 'Held' || payment?.status === 'Paid';
+    const StatusIcon = paid ? CheckCircle2 : Clock;
     return (
       <View className="flex-1 items-center justify-center bg-background px-8">
         {screen}
-        <Ionicons
-          name={paid ? 'checkmark-circle' : 'time-outline'}
-          size={40}
-          color={paid ? '#22C55E' : '#FBBF24'}
-        />
+        <StatusIcon size={40} color={paid ? '#22C55E' : '#FBBF24'} />
         <Text className="mt-3 text-center text-base font-bold text-text-primary">
           {paid ? 'Payment received' : 'Payment pending'}
         </Text>

@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckCheck, ChevronLeft, Home, MessageCircle } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -240,7 +240,7 @@ export default function ConversationThreadScreen() {
           onPress={() => router.back()}
           hitSlop={8}
           className="flex-row items-center gap-1 self-start active:opacity-70">
-          <Ionicons name="chevron-back" size={16} color="#156F8C" />
+          <ChevronLeft size={16} color="#156F8C" />
           <Text className="text-[13px] font-semibold text-primary">All conversations</Text>
         </Pressable>
 
@@ -265,7 +265,7 @@ export default function ConversationThreadScreen() {
             onPress={handleResolve}
             hitSlop={10}
             className="items-center justify-center active:scale-95">
-              <Ionicons name="checkmark-done-outline" size={20} color="#156F8C" />
+              <CheckCheck size={20} color="#156F8C" />
             </Pressable>
           )}
         </View>
@@ -379,7 +379,7 @@ export default function ConversationThreadScreen() {
             <Image source={{ uri: cover }} style={{ height: 44, width: 44, borderRadius: 10 }} contentFit="cover" />
           ) : (
             <View className="h-11 w-11 items-center justify-center rounded-[10px] bg-section">
-              <Ionicons name="home-outline" size={18} color="#2AA7A1" />
+              <Home size={18} color="#2AA7A1" />
             </View>
           )}
           <View className="flex-1">
@@ -415,7 +415,7 @@ export default function ConversationThreadScreen() {
           )}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center">
-              <Ionicons name="chatbubble-outline" size={28} color="#2AA7A1" />
+              <MessageCircle size={28} color="#2AA7A1" />
               <Text className="mt-2 text-center text-sm font-semibold text-text-primary">
                 Say hello
               </Text>

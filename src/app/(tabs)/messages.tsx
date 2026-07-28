@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { MessageCircle } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -133,7 +133,7 @@ export default function MessagesScreen() {
         </View>
       ) : conversations.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Ionicons name="chatbubble-outline" size={32} color="#2AA7A1" />
+          <MessageCircle size={32} color="#2AA7A1" />
           <Text className="mt-3 text-center text-base font-semibold text-text-primary">
             No messages yet
           </Text>

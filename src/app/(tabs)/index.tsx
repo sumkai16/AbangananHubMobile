@@ -1,11 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { CheckCircle2, Home } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppHeader } from '@/components/app-header';
 import { PropertyCard } from '@/components/property-card';
+import { SearchPill } from '@/components/search-pill';
 import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { StaggeredItem } from '@/components/ui/staggered-item';
 import { extractErrorMessage } from '@/lib/api-error';
@@ -163,34 +164,14 @@ export default function BrowseScreen() {
           bridging the dark and light sections, same as the prototype. Tapping
           it opens the full-screen search takeover (browse-by-type, popular
           areas, advanced filters) instead of typing inline — see /search. */}
-      <AnimatedPressable
-        scaleTo={0.97}
+      <SearchPill
+        location={filters.location}
+        filterCount={advancedFilterCount}
         onPress={() => router.push('/search')}
-        accessibilityRole="button"
-        accessibilityLabel={
-          filters.location
-            ? `Search, currently filtered to ${filters.location}`
-            : 'Search by location and filters'
-        }
-        className="mx-4 -mt-5 h-12 flex-row items-center gap-2 rounded-full border border-border bg-surface px-4 active:opacity-80">
-        <Ionicons name="location-outline" size={16} color="#64748B" />
-        <Text
-          className={`flex-1 text-[14px] ${filters.location ? 'font-semibold text-text-primary' : 'text-text-muted'}`}
-          numberOfLines={1}>
-          {filters.location || 'Search by location...'}
-        </Text>
-        {advancedFilterCount > 0 && (
-          <View className="h-5 w-5 items-center justify-center rounded-full bg-secondary">
-            <Text className="text-[10px] font-bold text-white">{advancedFilterCount}</Text>
-          </View>
-        )}
-        <View className="h-8 w-8 items-center justify-center rounded-full bg-secondary">
-          <Ionicons name="search" size={15} color="#FFFFFF" />
-        </View>
-      </AnimatedPressable>
+      />
 
       <View className="mx-4 mt-3 flex-row items-center gap-1.5">
-        <Ionicons name="checkmark-circle" size={13} color="#22C55E" />
+        <CheckCircle2 size={13} color="#22C55E" />
         <Text className="text-[11.5px] font-medium text-text-muted">
           {total} listing{total === 1 ? '' : 's'} live · every landlord ID-verified
         </Text>
@@ -269,7 +250,7 @@ export default function BrowseScreen() {
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16, paddingBottom: 24 }}
           ListEmptyComponent={
             <View className="items-center px-8 py-10">
-              <Ionicons name="home-outline" size={32} color="#2AA7A1" />
+              <Home size={32} color="#2AA7A1" />
               <Text className="mt-3 text-center text-base font-semibold text-text-primary">
                 No properties found
               </Text>

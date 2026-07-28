@@ -1,6 +1,13 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import {
+  AlertCircle,
+  Banknote,
+  Calendar,
+  FileText,
+  LogIn,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -69,14 +76,15 @@ function InfoRow({
   label,
   value,
 }: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: LucideIcon;
   label: string;
   value: string;
 }) {
+  const IconComponent = icon;
   return (
     <View className="flex-row items-center gap-3 py-2.5">
       <View className="h-8 w-8 items-center justify-center rounded-lg bg-section">
-        <Ionicons name={icon} size={15} color="#156F8C" />
+        <IconComponent size={15} color="#156F8C" />
       </View>
       <View className="flex-1">
         <Text className="text-[10.5px] font-semibold uppercase tracking-wide text-text-muted">
@@ -100,7 +108,7 @@ export default function ReservationDetailScreen() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-background px-8">
         <Stack.Screen options={{ title: 'Reservation' }} />
-        <Ionicons name="alert-circle-outline" size={32} color="#94A3B8" />
+        <AlertCircle size={32} color="#94A3B8" />
         <Text className="mt-3 text-center text-sm font-semibold text-text-primary">
           Reservation not loaded
         </Text>
@@ -185,20 +193,20 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
 
           <View className="mt-5 border-t border-border">
             <InfoRow
-              icon="calendar-outline"
+              icon={Calendar}
               label="Sent"
               value={new Date(reservation.reservation_date).toLocaleDateString()}
             />
             {!!reservation.target_move_in_date && (
               <InfoRow
-                icon="log-in-outline"
+                icon={LogIn}
                 label="Target move-in"
                 value={new Date(reservation.target_move_in_date).toLocaleDateString()}
               />
             )}
             {!!reservation.agreed_monthly_rent && (
               <InfoRow
-                icon="cash-outline"
+                icon={Banknote}
                 label="Monthly rent"
                 value={`₱${Number(reservation.agreed_monthly_rent).toLocaleString()}`}
               />
@@ -238,7 +246,7 @@ function ReservationDetail({ reservation: initial }: { reservation: Reservation 
                     ? 'Review & sign agreement'
                     : 'View agreement'
                 }
-                icon="document-text-outline"
+                icon={FileText}
                 onPress={() => router.push(`/reservation/${reservation.reservation_id}/agreement`)}
               />
             </View>

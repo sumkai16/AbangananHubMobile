@@ -1,18 +1,27 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowUpDown, Flag, MapPin, Star } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Pressable, ScrollView, Share, Text, View } from 'react-native';
 
+import { UnitDetailModal } from '@/components/unit-detail-modal';
 import { Button } from '@/components/ui/button';
+import { BottomActionBar } from '@/components/ui/bottom-action-bar';
+import { ImageCarousel } from '@/components/ui/image-carousel';
+import { SortSheet } from '@/components/ui/sort-sheet';
 import { StaggeredItem } from '@/components/ui/staggered-item';
 import { StarRating } from '@/components/ui/star-rating';
 import { extractErrorMessage } from '@/lib/api-error';
-import { getProperty, toggleFavorite, type PropertyDetail } from '@/lib/properties';
+import { getProperty, toggleFavorite, type PropertyDetail, type Review } from '@/lib/properties';
 import { relativeTime } from '@/lib/relative-time';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const REVIEW_SORT_LABELS = { recent: 'Most recent', highest: 'Highest rated', lowest: 'Lowest rated' } as const;
+
+function sortReviews(reviews: Review[], sort: keyof typeof REVIEW_SORT_LABELS): Review[] {
+  const sorted = [...reviews];
+  if (sort === 'highest') return sorted.sort((a, b) => b.rating - a.rating);
+  if (sort === 'lowest') return sorted.sort((a, b) => a.rating - b.rating);
+  return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+}
 
 export default function PropertyDetailScreen() {
   const router = useRouter();
@@ -21,6 +30,9 @@ export default function PropertyDetailScreen() {
   const [property, setProperty] = useState<PropertyDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reviewSort, setReviewSort] = useState<'recent' | 'highest' | 'lowest'>('recent');
+  const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
+  const [isUnitModalVisible, setIsUnitModalVisible] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -51,6 +63,15 @@ export default function PropertyDetailScreen() {
     }
   }
 
+  async function handleShare() {
+    if (!property) return;
+    try {
+      await Share.share({ message: `${property.title} — ${property.address}\n${property.description ?? ''}`.trim() });
+    } catch {
+      // User dismissed the share sheet — nothing to recover from.
+    }
+  }
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
@@ -72,88 +93,69 @@ export default function PropertyDetailScreen() {
   }
 
   const images = property.media?.filter((m) => m.media_type === 'Image') ?? [];
+  const availableUnits = property.units?.filter((u) => u.availability_status === 'Available') ?? [];
+  const lowestPrice = availableUnits.length
+    ? Math.min(...availableUnits.map((u) => u.rental_fee))
+    : property.min_rental_fee;
+
+  function handlePrimaryCta() {
+    if (availableUnits.length === 1) {
+      const unit = availableUnits[0];
+      router.push({
+        pathname: '/reservation/inquire',
+        params: {
+          unitId: String(unit.unit_id),
+          propertyTitle: property!.title,
+          unitLabel: unit.unit_label,
+          rentalFee: String(unit.rental_fee),
+        },
+      });
+    } else {
+      setIsUnitModalVisible(true);
+    }
+  }
 
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen options={{ title: '', headerShown: false }} />
       <ScrollView bounces={false}>
-        <View className="relative bg-section" style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}>
-          {images.length > 0 ? (
-            <FlatList
-              data={images}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => String(item.media_id)}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: item.media_url }}
-                  style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-                  contentFit="cover"
-                />
-              )}
-            />
-          ) : (
-            <View className="h-full w-full items-center justify-center">
-              <Ionicons name="home-outline" size={48} color="#2AA7A1" />
-            </View>
+        <ImageCarousel
+          images={images}
+          onBack={() => router.back()}
+          onShare={handleShare}
+          isFavorited={property.is_favorited}
+          onToggleFavorite={handleToggleFavorite}
+          renderExtraOverlayButtons={() => (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: '/reports/submit',
+                  params: { propertyId: String(property.property_id), propertyTitle: property.title },
+                })
+              }
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Report this listing"
+              className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
+              <Flag size={19} color="#FFFFFF" />
+            </Pressable>
           )}
+        />
 
-          <SafeAreaView edges={['top']} className="absolute left-0 right-0 top-0">
-            <View className="flex-row items-center justify-between px-4 pt-2">
-              <Pressable
-                onPress={() => router.back()}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel="Go back"
-                className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
-                <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
-              </Pressable>
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={() =>
-                    router.push({
-                      pathname: '/reports/submit',
-                      params: { propertyId: String(property.property_id), propertyTitle: property.title },
-                    })
-                  }
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel="Report this listing"
-                  className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
-                  <Ionicons name="flag-outline" size={19} color="#FFFFFF" />
-                </Pressable>
-                <Pressable
-                  onPress={handleToggleFavorite}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={property.is_favorited ? 'Remove from saved' : 'Save this listing'}
-                  className="h-11 w-11 items-center justify-center rounded-full bg-black/30 active:scale-95">
-                  <Ionicons
-                    name={property.is_favorited ? 'heart' : 'heart-outline'}
-                    size={20}
-                    color={property.is_favorited ? '#FF8A65' : '#FFFFFF'}
-                  />
-                </Pressable>
-              </View>
-            </View>
-          </SafeAreaView>
-        </View>
-
-        <View className="px-4 pb-10 pt-5">
+        <View className="px-4 pb-28 pt-5">
           <Text className="mb-1 text-[11px] font-bold uppercase tracking-wide text-primary">
             {property.property_type}
           </Text>
           <Text className="text-xl font-black text-text-primary">{property.title}</Text>
 
           <View className="mt-1.5 flex-row items-center gap-1">
-            <Ionicons name="location-outline" size={13} color="#64748B" />
+            <MapPin size={13} color="#64748B" />
             <Text className="text-sm text-text-muted">{property.address}</Text>
           </View>
 
           {property.review_count > 0 && (
             <View className="mt-2 flex-row items-center gap-1">
-              <Ionicons name="star" size={14} color="#FBBF24" />
+              <Star size={14} color="#FBBF24" fill="#FBBF24" />
               <Text className="text-sm font-semibold text-text-primary">
                 {property.avg_rating?.toFixed(1)}
               </Text>
@@ -207,7 +209,11 @@ export default function PropertyDetailScreen() {
                         {unit.availability_status}
                       </Text>
                     </View>
-                    {unit.availability_status === 'Available' && (
+                    {/* Skipped when there's exactly one available unit — the
+                        sticky bottom bar's CTA already covers that case
+                        (handlePrimaryCta), and showing both here and there
+                        duplicates the same action. */}
+                    {unit.availability_status === 'Available' && availableUnits.length > 1 && (
                       <View className="mt-3">
                         <Button
                           title="Send Inquiry"
@@ -233,10 +239,8 @@ export default function PropertyDetailScreen() {
           )}
 
           <View className="mt-6">
-            <View className="mb-1 flex-row items-center justify-between">
-              <Text className="text-base font-bold text-text-primary">
-                Reviews {property.review_count > 0 ? `(${property.review_count})` : ''}
-              </Text>
+            <View className="mb-3 flex-row items-center justify-between">
+              <Text className="text-base font-bold text-text-primary">Reviews</Text>
               {property.can_review && (
                 <Pressable
                   onPress={() =>
@@ -252,38 +256,98 @@ export default function PropertyDetailScreen() {
             </View>
 
             {property.reviews.length === 0 ? (
-              <Text className="mt-2 text-sm text-text-muted">No reviews yet.</Text>
+              <Text className="text-sm text-text-muted">No reviews yet.</Text>
             ) : (
-              <View className="mt-2 rounded-2xl border border-border bg-surface px-4">
-                {property.reviews.map((review, i) => (
-                  <StaggeredItem key={review.review_id} index={i}>
-                    <View className={i > 0 ? 'border-t border-border py-4' : 'py-4'}>
-                      <View className="flex-row items-center justify-between">
-                        <Text className="text-sm font-semibold text-text-primary">
-                          {review.tenant?.first_name} {review.tenant?.last_name}
-                        </Text>
-                        <Text className="text-xs text-text-muted">{relativeTime(review.created_at)}</Text>
-                      </View>
-                      <View className="mt-1">
-                        <StarRating value={review.rating} size={13} />
-                      </View>
-                      {!!review.review_comment && (
-                        <Text className="mt-1.5 text-sm text-text-primary">{review.review_comment}</Text>
-                      )}
-                      {!!review.landlord_reply && (
-                        <View className="mt-2 rounded-xl bg-section px-3 py-2">
-                          <Text className="text-xs font-bold text-primary">Landlord response</Text>
-                          <Text className="mt-0.5 text-xs text-text-primary">{review.landlord_reply}</Text>
+              <>
+                <View className="mb-4 flex-row items-center gap-4">
+                  <Text className="text-[40px] font-black leading-none text-text-primary">
+                    {property.avg_rating?.toFixed(1)}
+                  </Text>
+                  <View>
+                    <StarRating value={Math.round(property.avg_rating ?? 0)} size={14} />
+                    <Text className="mt-1 text-[12.5px] text-text-muted">
+                      {property.review_count} {property.review_count === 1 ? 'review' : 'reviews'}
+                    </Text>
+                  </View>
+                </View>
+
+                <Pressable
+                  onPress={() => setIsSortSheetOpen(true)}
+                  className="mb-3 flex-row items-center gap-1.5 self-start rounded-full border border-border bg-surface px-3 py-1.5 active:opacity-70">
+                  <ArrowUpDown size={13} color="#64748B" />
+                  <Text className="text-[12px] font-semibold text-text-primary">
+                    {REVIEW_SORT_LABELS[reviewSort]}
+                  </Text>
+                </Pressable>
+
+                <View className="rounded-2xl border border-border bg-surface px-4">
+                  {sortReviews(property.reviews, reviewSort).map((review, i) => (
+                    <StaggeredItem key={review.review_id} index={i}>
+                      <View className={i > 0 ? 'border-t border-border py-4' : 'py-4'}>
+                        <View className="flex-row items-center justify-between">
+                          <Text className="text-sm font-semibold text-text-primary">
+                            {review.tenant?.first_name} {review.tenant?.last_name}
+                          </Text>
+                          <Text className="text-xs text-text-muted">{relativeTime(review.created_at)}</Text>
                         </View>
-                      )}
-                    </View>
-                  </StaggeredItem>
-                ))}
-              </View>
+                        <View className="mt-1">
+                          <StarRating value={review.rating} size={13} />
+                        </View>
+                        {!!review.review_comment && (
+                          <Text className="mt-1.5 text-sm text-text-primary">{review.review_comment}</Text>
+                        )}
+                        {!!review.landlord_reply && (
+                          <View className="mt-2 rounded-xl bg-section px-3 py-2">
+                            <Text className="text-xs font-bold text-primary">Landlord response</Text>
+                            <Text className="mt-0.5 text-xs text-text-primary">{review.landlord_reply}</Text>
+                          </View>
+                        )}
+                      </View>
+                    </StaggeredItem>
+                  ))}
+                </View>
+              </>
             )}
           </View>
         </View>
       </ScrollView>
+
+      <SortSheet
+        visible={isSortSheetOpen}
+        onClose={() => setIsSortSheetOpen(false)}
+        value={reviewSort}
+        onChange={setReviewSort}
+        options={[
+          { value: 'recent', label: REVIEW_SORT_LABELS.recent },
+          { value: 'highest', label: REVIEW_SORT_LABELS.highest },
+          { value: 'lowest', label: REVIEW_SORT_LABELS.lowest },
+        ]}
+      />
+
+      {availableUnits.length > 0 && (
+        <BottomActionBar>
+          <View>
+            <Text className="text-[11px] font-medium text-text-muted">From</Text>
+            <Text className="text-base font-black text-primary">
+              ₱{lowestPrice?.toLocaleString()}
+              <Text className="text-xs font-medium text-text-muted"> /month</Text>
+            </Text>
+          </View>
+          <Button
+            title={availableUnits.length === 1 ? 'Send Inquiry' : 'View units'}
+            variant="cta"
+            fullWidth={false}
+            onPress={handlePrimaryCta}
+          />
+        </BottomActionBar>
+      )}
+
+      <UnitDetailModal
+        visible={isUnitModalVisible}
+        onClose={() => setIsUnitModalVisible(false)}
+        units={property.units ?? []}
+        propertyTitle={property.title}
+      />
     </View>
   );
 }

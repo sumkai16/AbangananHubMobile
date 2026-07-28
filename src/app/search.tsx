@@ -1,5 +1,16 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import {
+  Bed,
+  Building2,
+  Check,
+  CheckCircle2,
+  Home,
+  MapPin,
+  Square,
+  X,
+  XCircle,
+  type LucideIcon,
+} from 'lucide-react-native';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,11 +19,11 @@ import { AnimatedPressable } from '@/components/ui/animated-pressable';
 import { DEFAULT_BROWSE_FILTERS, useBrowseFilters, type BrowseFilters } from '@/lib/browse-filters-context';
 import type { PropertyFilters } from '@/lib/properties';
 
-const BROWSE_TYPES: { value: string; label: string; icon: React.ComponentProps<typeof Ionicons>['name'] }[] = [
-  { value: 'Bedspace', label: 'Bedspace', icon: 'bed-outline' },
-  { value: 'Room', label: 'Room', icon: 'square-outline' },
-  { value: 'Apartment', label: 'Apartment', icon: 'business-outline' },
-  { value: 'House', label: 'House', icon: 'home-outline' },
+const BROWSE_TYPES: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'Bedspace', label: 'Bedspace', icon: Bed },
+  { value: 'Room', label: 'Room', icon: Square },
+  { value: 'Apartment', label: 'Apartment', icon: Building2 },
+  { value: 'House', label: 'House', icon: Home },
 ];
 
 // Static for now — the server has no "distinct areas near you" endpoint yet;
@@ -32,11 +43,12 @@ function TypeTile({
   active,
   onPress,
 }: {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
+  icon: LucideIcon;
   label: string;
   active: boolean;
   onPress: () => void;
 }) {
+  const Icon = icon;
   return (
     <AnimatedPressable
       scaleTo={0.92}
@@ -47,7 +59,7 @@ function TypeTile({
       className="flex-1 items-center gap-1.5 active:opacity-70">
       <View
         className={`h-12 w-12 items-center justify-center rounded-xl ${active ? 'bg-secondary' : 'bg-section'}`}>
-        <Ionicons name={icon} size={20} color={active ? '#FFFFFF' : '#156F8C'} />
+        <Icon size={20} color={active ? '#FFFFFF' : '#156F8C'} />
       </View>
       <Text className={`text-[11px] font-semibold ${active ? 'text-primary' : 'text-text-primary'}`}>
         {label}
@@ -98,14 +110,14 @@ export default function SearchScreen() {
             accessibilityRole="button"
             accessibilityLabel="Close search"
             className="h-9 w-9 items-center justify-center rounded-full active:opacity-70">
-            <Ionicons name="close" size={22} color="#1F2937" />
+            <X size={22} color="#1F2937" />
           </AnimatedPressable>
-          <View className="h-11 flex-1 flex-row items-center gap-2 rounded-full border border-border bg-surface px-4">
-            <Ionicons name="location-outline" size={16} color="#64748B" />
+          <View className="h-12 flex-1 flex-row items-center gap-2 rounded-full border border-border bg-surface px-4">
+            <MapPin size={16} color="#64748B" />
             <TextInput
               autoFocus
               className="flex-1 text-[14px] text-text-primary"
-              placeholder="Search by location..."
+              placeholder="Where to?"
               placeholderTextColor="#94A3B8"
               value={draft.location}
               onChangeText={(text) => setDraft((d) => ({ ...d, location: text }))}
@@ -118,7 +130,7 @@ export default function SearchScreen() {
                 hitSlop={8}
                 accessibilityRole="button"
                 accessibilityLabel="Clear location">
-                <Ionicons name="close-circle" size={16} color="#94A3B8" />
+                <XCircle size={16} color="#94A3B8" />
               </Pressable>
             )}
           </View>
@@ -188,7 +200,7 @@ export default function SearchScreen() {
               className={`h-5 w-5 items-center justify-center rounded-md border ${
                 draft.verifiedOnly ? 'border-secondary bg-secondary' : 'border-border bg-background'
               }`}>
-              {draft.verifiedOnly && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+              {draft.verifiedOnly && <Check size={14} color="#FFFFFF" />}
             </View>
           </AnimatedPressable>
 
@@ -209,7 +221,7 @@ export default function SearchScreen() {
                   <Text className={`text-[13.5px] font-semibold ${active ? 'text-primary' : 'text-text-primary'}`}>
                     {opt.label}
                   </Text>
-                  {active && <Ionicons name="checkmark-circle" size={18} color="#156F8C" />}
+                  {active && <CheckCircle2 size={18} color="#156F8C" />}
                 </AnimatedPressable>
               );
             })}

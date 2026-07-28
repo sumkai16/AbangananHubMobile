@@ -17,6 +17,9 @@ module.exports = {
         border: "#E2E8F0",
         success: "#22C55E",
         warning: "#FBBF24",
+        // Darker amber for text sitting on a warning/10 tint — #FBBF24
+        // itself fails contrast as foreground text on that background.
+        "warning-text": "#B45309",
         error: "#EF4444",
       },
     },

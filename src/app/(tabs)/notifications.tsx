@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { Bell, CreditCard, FileText, Home, Star, type LucideIcon } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,22 +16,22 @@ import {
 } from '@/lib/notifications';
 import { relativeTime } from '@/lib/relative-time';
 
-const TYPE_ICON: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
-  reservation: 'home-outline',
-  agreement: 'document-text-outline',
-  payment: 'card-outline',
-  review: 'star-outline',
+const TYPE_ICON: Record<string, LucideIcon> = {
+  reservation: Home,
+  agreement: FileText,
+  payment: CreditCard,
+  review: Star,
 };
 
 function NotificationRow({ notification }: { notification: AppNotification }) {
-  const icon = TYPE_ICON[notification.type] ?? 'notifications-outline';
+  const Icon = TYPE_ICON[notification.type] ?? Bell;
   return (
     <View className="flex-row items-start gap-3 border-b border-border py-3.5">
       <View
         className={`h-10 w-10 items-center justify-center rounded-full ${
           notification.is_read ? 'bg-section' : 'bg-secondary'
         }`}>
-        <Ionicons name={icon} size={17} color={notification.is_read ? '#156F8C' : '#FFFFFF'} />
+        <Icon size={17} color={notification.is_read ? '#156F8C' : '#FFFFFF'} />
       </View>
       <View className="flex-1">
         <View className="flex-row items-center gap-1.5">
@@ -140,7 +140,7 @@ export default function NotificationsScreen() {
         </View>
       ) : notifications.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Ionicons name="notifications-outline" size={32} color="#2AA7A1" />
+          <Bell size={32} color="#2AA7A1" />
           <Text className="mt-3 text-center text-base font-semibold text-text-primary">
             No notifications yet
           </Text>

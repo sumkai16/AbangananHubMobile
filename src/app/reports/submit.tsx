@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { AlertCircle, CheckCircle2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -57,7 +57,7 @@ export default function SubmitReportScreen() {
 
           {error && (
             <View className="mb-4 flex-row items-start gap-3 rounded-lg border border-error/30 bg-error/10 px-4 py-2.5">
-              <Ionicons name="alert-circle" size={16} color="#EF4444" style={{ marginTop: 2 }} />
+              <AlertCircle size={16} color="#EF4444" style={{ marginTop: 2 }} />
               <Text className="flex-1 text-xs font-semibold text-error">{error}</Text>
             </View>
           )}
@@ -77,7 +77,7 @@ export default function SubmitReportScreen() {
                   <Text className={`text-[13.5px] font-semibold ${active ? 'text-primary' : 'text-text-primary'}`}>
                     {c}
                   </Text>
-                  {active && <Ionicons name="checkmark-circle" size={18} color="#156F8C" />}
+                  {active && <CheckCircle2 size={18} color="#156F8C" />}
                 </AnimatedPressable>
               );
             })}

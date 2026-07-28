@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { AlertCircle, Clock } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import type { MoveInClock, Reservation } from '@/lib/reservations';
@@ -49,15 +49,12 @@ export function MoveInClockCard({
     slot: reservation.handover_at,
   });
 
+  const StatusIcon = disputed ? AlertCircle : Clock;
+
   return (
     <View className={`rounded-2xl p-4 ${tone.bg}`}>
       <View className="flex-row items-start gap-2.5">
-        <Ionicons
-          name={disputed ? 'alert-circle-outline' : 'time-outline'}
-          size={16}
-          color={tone.icon}
-          style={{ marginTop: 1 }}
-        />
+        <StatusIcon size={16} color={tone.icon} style={{ marginTop: 1 }} />
         <View className="flex-1">
           <Text className={`text-[14px] font-bold leading-snug ${tone.text}`}>{headline}</Text>
           <Text className={`mt-1 text-[12px] leading-relaxed ${tone.text} opacity-90`}>{detail}</Text>

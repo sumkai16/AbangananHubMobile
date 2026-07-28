@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { Bell, FileText, Home, LayoutGrid, MessageCircle } from 'lucide-react-native';
 
 // SDK 54 uses the classic (stable) expo-router Tabs API — the newer
 // `expo-router/unstable-native-tabs` used by the SDK 57 default template
@@ -30,7 +30,7 @@ export default function AppTabs() {
         options={{
           title: 'Browse',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+            <Home size={size} color={color} fill={focused ? color : 'none'} />
           ),
         }}
       />
@@ -39,11 +39,7 @@ export default function AppTabs() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? 'chatbubble' : 'chatbubble-outline'}
-              size={size}
-              color={color}
-            />
+            <MessageCircle size={size} color={color} fill={focused ? color : 'none'} />
           ),
         }}
       />
@@ -52,11 +48,7 @@ export default function AppTabs() {
         options={{
           title: 'Notifications',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons
-              name={focused ? 'notifications' : 'notifications-outline'}
-              size={size}
-              color={color}
-            />
+            <Bell size={size} color={color} fill={focused ? color : 'none'} />
           ),
         }}
       />
@@ -65,7 +57,7 @@ export default function AppTabs() {
         options={{
           title: 'Reservations',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'document-text' : 'document-text-outline'} size={size} color={color} />
+            <FileText size={size} color={color} fill={focused ? color : 'none'} />
           ),
         }}
       />
@@ -78,7 +70,7 @@ export default function AppTabs() {
         options={{
           title: 'More',
           tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={size} color={color} />
+            <LayoutGrid size={size} color={color} fill={focused ? color : 'none'} />
           ),
         }}
       />

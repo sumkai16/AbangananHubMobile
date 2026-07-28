@@ -1,5 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -52,7 +52,7 @@ export default function ChangePasswordScreen() {
         <ScrollView contentContainerClassName="px-4 py-6" keyboardShouldPersistTaps="handled">
           {error && (
             <View className="mb-4 flex-row items-start gap-3 rounded-lg border border-error/30 bg-error/10 px-4 py-2.5">
-              <Ionicons name="alert-circle" size={16} color="#EF4444" style={{ marginTop: 2 }} />
+              <AlertCircle size={16} color="#EF4444" style={{ marginTop: 2 }} />
               <Text className="flex-1 text-xs font-semibold text-error">{error}</Text>
             </View>
           )}
